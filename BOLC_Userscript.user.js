@@ -7,8 +7,8 @@
 // @downloadURL https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @updateUR    https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @grant       none
-// @version     1.0
-// @author      -
+// @version     1.1
+// @author      Joffrey SCHROEDER / @Write on Github
 // ==/UserScript==
 
 (function() {
@@ -86,15 +86,11 @@
     else {
         log("(iframe) Loaded on : " + current);
     }
-
-    /* Prevent script from running on pages.
+    
+    /* 
+     * Unused
+     * 
      * */
-    if (currentPagepath.startsWith("/auth") ||
-        currentPagepath.startsWith("/settings"))
-    {
-      return;
-    }
-
     if (currentPagepath.startsWith("/auth")) {
       style = ``;
       paste(style);
@@ -114,19 +110,6 @@
 
     /*
      *
-     * Strip les elements du header d'un tableau a 10 charactères.
-     * Permettant du gain en hauteur dû aux entêtes trop longues.
-     *
-     * */
-    document.querySelectorAll('thead.main tr.fields th').forEach(th => {
-        const text = th.textContent.trim(); // Récupère le contenu textuel
-        if (text.length > 10) {
-            th.textContent = text.substring(0, 10) + '…'; // Tronque à 10 caractères et ajoute un ellipsis
-        }
-    });
-
-    /*
-     *
      * Ajoute plus d'option d'affichage d'elements au menu déroulant.
      *
      * */
@@ -140,31 +123,6 @@
         select.appendChild(option);
     });
 
-    /*
-     *
-     * (Pas utilisé)
-     * Masque la colonne spécifique "URL Kimovil", car inutile et
-     * prend de la place ne h
-     *
-     * */
-
-    // const path_pc_tableau_masquage_colonne = [ "/materiel_pa/list/1", "/materiel_pa/list" ];
-    // if (path_pc_tableau_masquage_colonne.some(path => currentPagepath === path)) {
-    //   setTimeout(() => {
-    //       document.querySelectorAll('th[data-field="f_lien_url_description"], td:nth-child(25)').forEach(element => {
-    //           element.style.display = 'none';
-    //       });
-    //   }, 7000);
-    // }
-
-    // const path_tel_tableau_masquage_colonne = ["/materiel_pa/list/2" ];
-    // if (path_tel_tableau_masquage_colonne.some(path => currentPagepath === path)) {
-    //   setTimeout(() => {
-    //       document.querySelectorAll('th[data-field="f_lien_url_description"], td:nth-child(32)').forEach(element => {
-    //           element.style.display = 'none';
-    //       });
-    //   }, 7000);
-    // }
 
     /*
      *
@@ -457,5 +415,55 @@
     `;
 
     paste(style);
+    
+    /* 
+     * Commentaire 
+     * Fonctionnalités désactivés
+     * Désactivé pour le moment, inutile depuis l'intégration des
+     * white-space: nowrap + overflow: hidden
+     * */
+
+    /*
+     * (Pas utilisé)
+     * Strip les elements du header d'un tableau a 10 charactères.
+     * Permettant du gain en hauteur dû aux entêtes trop longues.
+     *
+     * */
+
+    /*
+    document.querySelectorAll('thead.main tr.fields th').forEach(th => {
+        const text = th.textContent.trim(); // Récupère le contenu textuel
+        if (text.length > 10) {
+            th.textContent = text.substring(0, 10) + '…'; // Tronque à 10 caractères et ajoute un ellipsis
+        }
+    });
+    */
+    
+    /*
+     *
+     * (Pas utilisé)
+     * Masque la colonne spécifique "URL Kimovil", car inutile et
+     * prend de la place ne h
+     *
+     * */
+
+    /*
+    const path_pc_tableau_masquage_colonne = [ "/materiel_pa/list/1", "/materiel_pa/list" ];
+    if (path_pc_tableau_masquage_colonne.some(path => currentPagepath === path)) {
+      setTimeout(() => {
+          document.querySelectorAll('th[data-field="f_lien_url_description"], td:nth-child(25)').forEach(element => {
+              element.style.display = 'none';
+          });
+      }, 7000);
+    }
+    const path_tel_tableau_masquage_colonne = ["/materiel_pa/list/2" ];
+    if (path_tel_tableau_masquage_colonne.some(path => currentPagepath === path)) {
+      setTimeout(() => {
+          document.querySelectorAll('th[data-field="f_lien_url_description"], td:nth-child(32)').forEach(element => {
+              element.style.display = 'none';
+          });
+      }, 7000);
+    }
+    */
 
 })();
