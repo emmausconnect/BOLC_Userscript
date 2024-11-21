@@ -12,6 +12,9 @@ Un userscript ayant pour but d'améliorer le site du BOLC et ses fonctionnalité
 - Réduit le padding des cases dans les tableaux pour optimiser la taille.  
 - Ajoute white-space: nowrap et overflow: hidden aux cases des tableaux pour permettre une navigation plus fluide et optimiser l'espace.  
 - Ajoute la possibilité de réduire la taille des colonnes plus petites que ce qui est normalement autorisé.
+- Réduit la taille du header qui prend trop de place en hauteur à l'origine.
+- Réduit la largeur de la sidebar.
+- Augmente le contraste des menus de la sidebar lorsqu'elle est pliée (au survol).
 
 # Installation
 
