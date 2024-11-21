@@ -3,7 +3,15 @@ Un userscript ayant pour but d'améliorer le site du BOLC et ses fonctionnalité
 
 # Fonctionnalités de ce script 
 
-En cours d'écriture
+- Supprime tous les délais d'animation.  
+- Réduit les éléments du header à 10 caractères, puis ajoute une ellipsis (…) pour optimiser la taille prise en hauteur.  
+- Ajoute plus d'options dans le menu déroulant pour afficher plus d'éléments : 1000, 2000, 3000, 5000 et 10K.  
+- Optimise les pages ayant des tableaux pour qu'elles utilisent tout l'espace disponible en minimisant le padding et la marge.  
+- Supprime le header sticky pendant le défilement, pour éviter divers bugs.  
+- Réduit la taille de la police de manière globale ainsi que dans les tableaux pour optimiser leur taille.  
+- Réduit le padding des cases dans les tableaux pour optimiser la taille.  
+- Ajoute white-space: nowrap et overflow: hidden aux cases des tableaux pour permettre une navigation plus fluide et optimiser l'espace.  
+- Ajoute la possibilité de réduire la taille des colonnes plus petites que ce qui est normalement autorisé.
 
 # Installation
 
