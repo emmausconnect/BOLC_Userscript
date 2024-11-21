@@ -4,7 +4,7 @@ Un userscript ayant pour but d'améliorer le site du BOLC et ses fonctionnalité
 # Fonctionnalités de ce script 
 
 - Supprime tous les délais d'animation.  
-- Réduit les éléments du header à 10 caractères, puis ajoute une ellipsis (…) pour optimiser la taille prise en hauteur.  
+- ~~Réduit les éléments du header à 10 caractères, puis ajoute une ellipsis (…) pour optimiser la taille prise en hauteur.~~  
 - Ajoute plus d'options dans le menu déroulant pour afficher plus d'éléments : 1000, 2000, 3000, 5000 et 10K.  
 - Optimise les pages ayant des tableaux pour qu'elles utilisent tout l'espace disponible en minimisant le padding et la marge.  
 - Supprime le header sticky pendant le défilement, pour éviter divers bugs.  
