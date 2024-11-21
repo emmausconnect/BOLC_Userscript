@@ -3,6 +3,9 @@
 // @namespace   BOLC Newmips Patch
 // @match       https://lacollecte.newmips.cloud/*
 // @match       https://app-emmaus-cloud.newmips.run/*
+// @homepageURL https://github.com/emmausconnect/BOLC_Userscript
+// @downloadURL https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
+// @updateUR    https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @grant       none
 // @version     1.0
 // @author      -
