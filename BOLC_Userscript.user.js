@@ -7,7 +7,7 @@
 // @downloadURL https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @updateURL   https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @grant       none
-// @version     1.3
+// @version     1.4
 // @author      Joffrey SCHROEDER / @Write on Github
 // ==/UserScript==
 
@@ -129,13 +129,12 @@
       // Apply styles for specific paths
       if (CONFIG.PATHS_WITH_TABLEAU.some(path => utils.currentPagepath.startsWith(path))) {
           applyTableauStyles();
-          setupFloatingPagination();
+          // setupFloatingPagination();
           setupTableInteractions();
       }
 
       // Global styles
       const globalStyle = `
-
         a[style^="color: rgb(60, 141, 188)"] {
           color: white;
           background: #09acbe;
@@ -148,7 +147,6 @@
           padding-right: 300;
           border-right: 5px solid transparent;
         }
-
         a.dt-button.btnSTL {
           top: unset;
         }
@@ -203,31 +201,25 @@
           display: block;
           font-size: 13px;
         }
-
         .btn {
           padding: 0px 4px;
           font-size: 13px;
         }
-
         .content-header > h1 {
           display: none;
         }
-
         .main-header .sidebar-toggle {
           padding: 5px 10px;
         }
-
         .navbar-nav > li, sidebar-toggle {
           padding-top: 0px;
         }
-
         .main-header .navbar {
           min-height: 0;
           padding: 0px 15px 0 0;
           height: 32px;
           margin-left: 230px;
         }
-
         .sidebar-mini.sidebar-collapse .main-header .navbar {
           margin-left: 44px;
         }
@@ -238,13 +230,11 @@
           min-height: 28px;
         }
         @media (min-width: 768px) {
-
           .hover:hover, .inline-help:hover, input[type="color"]:hover, .insert:hover, table > tbody > tr:hover,
           .table-striped > tbody > tr:hover:nth-child(2n+1) > td {
             color: white;
             background-color: #1391b1;
           }
-
           body.sidebar-mini.sidebar-collapse .content-wrapper, .sidebar-mini.sidebar-collapse .right-side, .sidebar-mini.sidebar-collapse .main-footer {
             margin-left: 45px;
           }
@@ -260,33 +250,26 @@
             width: 45px;
           }
         }
-
         .navbar-nav > li, sidebar-toggle {
           min-height: 0;
         }
-
         .sidebar-toggle {
           min-height: 0;
         }
-
         .dataTables_length {
           float: left;
           padding-left: 15px;
         }
-
         .nav > li:nth-child(1) > div:nth-child(1) {
           margin-top: -16px;
           padding: 2px 10px 0px 10px;
         }
-
         .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
           padding: 3px;
         }
-
         .main-sidebar, .left-side {
           padding-top: 0px;
         }
-
         body {
           font-size: small;
         }
@@ -305,21 +288,18 @@
           -o-transition: margin-left 0s ease-in-out;
           transition: margin-left 0s ease-in-out;
         }
-
         .main-sidebar, .left-side {
           -webkit-transition: -webkit-transform 0s ease-in-out, width 0s ease-in-out;
           -moz-transition: -moz-transform 0s ease-in-out, width 0s ease-in-out;
           -o-transition: -o-transform 0s ease-in-out, width 0s ease-in-out;
           transition: transform 0s ease-in-out, width 0s ease-in-out;
         }
-
         .content-wrapper, .right-side, .main-footer {
           -webkit-transition: -webkit-transform 0s ease-in-out, margin 0s ease-in-out;
           -moz-transition: -moz-transform 0s ease-in-out, margin 0s ease-in-out;
           -o-transition: -o-transform 0s ease-in-out, margin 0s ease-in-out;
           transition: transform 0s ease-in-out, margin 0s ease-in-out;
         }
-
         .logo {
           display: none;
         }
@@ -329,29 +309,24 @@
           box-shadow: unset;
           border-right: 1px solid #ccc;
         }
-
         @media (min-width: 768px) {
           .navbar-nav > li > a {
             padding-top: 5px;
             padding-bottom: 0px;
           }
         }
-
         .content-header > .breadcrumb {
           padding: 0px 5px;
           position: absolute;
           top: 10px;
           left: 10px;
         }
-
         .content {
           padding: 5px 0px 0px 0px;
         }
-
         .box-header {
           padding: 10px 0px 10px 5px !important;
         }
-
         .animated {
           -webkit-animation-duration: 0.1s;
           animation-duration: 0.1;
@@ -363,98 +338,116 @@
   };
 
   const applyTableauStyles = () => {
-      const tableauStyle = `
-        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active {
-          background: white;
-        }
-        .pagination > .disabled > span, .pagination > .disabled > span:hover, .pagination > .disabled > span:focus, .pagination > .disabled > a, .pagination > .disabled > a:hover, .pagination > .disabled > a:focus {
-          color: #c6c6c6;
-          cursor: not-allowed;
-          background-color: #f2f2f2;
-          text-shadow: 0px 1px 0px #fff;
-        }
-        .pagination > li > a, .pagination > li > span {
-        margin-left: unset;
-        }
-        #table_e_materiel_pa_info, .btn.btn-default {
-          margin-left: 20px;
-        }
-        #table_e_materiel_pa_paginate {
-          position: fixed;
-          bottom: 5px;
-          right: 5px;
-          z-index: 9999;
-          background: #aaa5a5b2;
-          padding: 3px;
-          margin: 0px;
-          border-radius: 6px;
-          line-height: 0;
-        }
-        .paginate_button {
-          border-radius: 4px;
-        }
-        .pagination {
-          line-height: 0;
-        }
-        .dataTables_wrapper .dataTables_paginate .paginate_button:first-child {
-          margin-left: 0px;
-        }
-        div.dataTables_paginate ul.pagination {
-          margin: 0;
-          padding: 0;
-        }
-        .table-responsive {
-          margin-bottom: 0px;
-        }
-        .box {
-          margin-bottom: 0px;
-        }
-        table.dataTable {
-          clear: both;
-          margin-top: 0px;
-          margin-bottom: 0px;
-        }
-        section.content-header, section.content, div.content-wrapper {
-          background: white;
-        }
-        .box-body {
-          padding: 0;
-        }
-        .box {
-          padding: 0;
-        }
-        .content-wrapper {
-          padding: 0;
-        }
+          const tableauStyle = `
+          .paging_simple_numbers .pagination .paginate_button:hover a {
+            background: #095f68;
+          }
+          .paging_simple_numbers .pagination .paginate_button.active a {
+            background: #09acbe;
+          }
+          .paging_simple_numbers .pagination .paginate_button.disabled:hover a {
+            background: #eee;
+          }
+          .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            color: white;
+            border: 1px solid transparent;
+          }
+          .dataTables_wrapper .dataTables_paginate .paginate_button.disabled, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active {
+            background: white;
+          }
+          .pagination > .disabled > a, .pagination > .disabled > a:hover {
+            background: white;
+          }
+          .pagination > .disabled > span, .pagination > .disabled > span:hover, .pagination > .disabled > span:focus, .pagination > .disabled > a, .pagination > .disabled > a:hover, .pagination > .disabled > a:focus {
+            color: #c6c6c6;
+            cursor: not-allowed;
+            background-color: #f2f2f2;
+            text-shadow: 0px 1px 0px #fff;
+          }
+          .pagination > li > a, .pagination > li > span {
+          margin-left: unset;
+          }
+          #table_e_materiel_pa_info, .btn.btn-default {
+            margin-left: 20px;
+          }
+          .dataTables_paginate {
+            position: fixed;
+            bottom: 5px;
+            right: 5px;
+            z-index: 9999;
+            background: #aaa5a5b2;
+            padding: 3px;
+            margin: 0px;
+            border-radius: 6px;
+            line-height: 0;
+          }
+          .paginate_button {
+            border-radius: 4px;
+          }
+          .pagination {
+            line-height: 0;
+          }
+          .dataTables_wrapper .dataTables_paginate .paginate_button:first-child {
+            margin-left: 0px;
+          }
+          div.dataTables_paginate ul.pagination {
+            margin: 0;
+            padding: 0;
+          }
+          .table-responsive {
+            margin-bottom: 0px;
+          }
+          .box {
+            margin-bottom: 0px;
+          }
+          table.dataTable {
+            clear: both;
+            margin-top: 0px;
+            margin-bottom: 0px;
+          }
+          section.content-header, section.content, div.content-wrapper {
+            background: white;
+          }
+          .box-body {
+            padding: 0;
+          }
+          .box {
+            padding: 0;
+          }
+          .content-wrapper {
+            padding: 0;
+          }
 
-        .col-xs-1, .col-sm-1, .col-md-1, .col-lg-1, .col-xs-2, .col-sm-2, .col-md-2, .col-lg-2, .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3, .col-xs-4, .col-sm-4, .col-md-4, .col-lg-4, .col-xs-5, .col-sm-5, .col-md-5, .col-lg-5, .col-xs-6, .col-sm-6, .col-md-6, .col-lg-6, .col-xs-7, .col-sm-7, .col-md-7, .col-lg-7, .col-xs-8, .col-sm-8, .col-md-8, .col-lg-8, .col-xs-9, .col-sm-9, .col-md-9, .col-lg-9, .col-xs-10, .col-sm-10, .col-md-10, .col-lg-10, .col-xs-11, .col-sm-11, .col-md-11, .col-lg-11, .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {
-          padding: 0;
-        }
-        .fixedHeader-floating {
-           display: none;
-         }
-      `;
+          .col-xs-1, .col-sm-1, .col-md-1, .col-lg-1, .col-xs-2, .col-sm-2, .col-md-2, .col-lg-2, .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3, .col-xs-4, .col-sm-4, .col-md-4, .col-lg-4, .col-xs-5, .col-sm-5, .col-md-5, .col-lg-5, .col-xs-6, .col-sm-6, .col-md-6, .col-lg-6, .col-xs-7, .col-sm-7, .col-md-7, .col-lg-7, .col-xs-8, .col-sm-8, .col-md-8, .col-lg-8, .col-xs-9, .col-sm-9, .col-md-9, .col-lg-9, .col-xs-10, .col-sm-10, .col-md-10, .col-lg-10, .col-xs-11, .col-sm-11, .col-md-11, .col-lg-11, .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {
+            padding: 0;
+          }
+          .fixedHeader-floating {
+             display: none;
+           }
+        `;
       utils.paste(tableauStyle);
   };
 
-  const setupFloatingPagination = () => {
-      const checkExist = setInterval(() => {
-          const paginateContainer = document.querySelector('#table_e_materiel_pa_paginate');
-          if (paginateContainer) {
-              clearInterval(checkExist);
-              createMovablePaginationButton(paginateContainer);
-          }
-      }, 100);
-  };
+  // const setupFloatingPagination = () => {
+  //     const checkExist = setInterval(() => {
+  //         const paginateContainer = document.querySelector('.dataTables_paginate');
+  //         if (paginateContainer) {
+  //             clearInterval(checkExist);
+  //             createMovablePaginationButton(paginateContainer);
+  //         }
+  //     }, 100);
+  // };
 
   const createMovablePaginationButton = (paginateContainer) => {
+      if (paginateContainer.querySelector('.move_button')) return;
+
       // Crée un bouton pour déplacer la pagination
       const moveButton = document.createElement('li');
       moveButton.classList.add('paginate_button', 'move_button');
       moveButton.innerHTML = '<a href="#" style="cursor: grab;">&#8592;</a>';
-      setTimeout(function () {
-        paginateContainer.querySelector('ul').appendChild(moveButton);
-      }, 520);
+
+      paginateContainer.querySelector('ul').prepend(moveButton);
+
       // Variables de contrôle pour le mouvement
       let isMoving = false;
       let startX = 0;
@@ -544,6 +537,14 @@
                   });
               }
           });
+
+          dtable.on('draw', () => {
+              const paginateContainer = document.querySelector('.dataTables_paginate');
+              if (paginateContainer) {
+                  createMovablePaginationButton(paginateContainer);
+              }
+          });
+
           // Adjust column widths after initialization
           dtable.columns.adjust();
       } catch (error) {
