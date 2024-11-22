@@ -7,7 +7,7 @@
 // @downloadURL https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @updateURL   https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @grant       none
-// @version     1.4
+// @version     1.5
 // @author      Joffrey SCHROEDER / @Write on Github
 // ==/UserScript==
 
@@ -39,7 +39,8 @@
   const logger = {
       log: (str) => {
           if (CONFIG.DEBUG) {
-              console.log(`📜 BOLC Userscript: ${str}`);
+              const scriptVersion = GM_info.script.version;
+              console.log(`📜 BOLCScript (${scriptVersion}) : ${str}`);
           }
       },
       error: (str) => {
@@ -106,6 +107,15 @@
           logger.log(`(main) Loaded on: ${utils.currentUrl}`);
       } else {
           logger.log(`(iframe) Loaded on: ${utils.currentUrl}`);
+      }
+
+      // Append la version du script à côté de la version du BOLC
+      const scriptVersion = GM_info.script.version;
+      const targetElement = document.querySelector('li[style*="padding: 20px 18px 0 18px !important;"] > div');
+
+      if (targetElement) {
+          // Ajouter la version après le texte existant
+          targetElement.innerHTML += ` - BOLCScript v${scriptVersion}`;
       }
 
       // Accelerate animations
