@@ -7,7 +7,7 @@
 // @downloadURL https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @updateURL   https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @grant       none
-// @version     1.2
+// @version     1.3
 // @author      Joffrey SCHROEDER / @Write on Github
 // ==/UserScript==
 
@@ -135,10 +135,20 @@
 
       // Global styles
       const globalStyle = `
+
+        a[style^="color: rgb(60, 141, 188)"] {
+          color: white;
+          background: #09acbe;
+        }
+        .sidebar-collapse .sidebar-menu li.active > a {
+          background: #0ca4ba;
+          color: white;
+        }
         th:last-child {
           padding-right: 300;
           border-right: 5px solid transparent;
         }
+
         a.dt-button.btnSTL {
           top: unset;
         }
@@ -153,11 +163,28 @@
           overflow: hidden;
           white-space: nowrap;
         }
-
+        .sidebar-menu .treeview-menu > li:hover > a {
+          color: #fff;
+        }
         @media (min-width: 768px) {
+          .sidebar-mini.sidebar-collapse .sidebar-menu > li:hover > a > span {
+            top: 0;
+            margin-left: -3px;
+            padding: 12px 5px 11px 20px;
+            background-color: #0ca4ba;
+            color: white;
+          }
+          .sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
+            padding-top: 0px;
+            padding-bottom: 0px;
+            border-bottom-right-radius: 0px;
+          }
           .sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
             padding-bottom: 0px;
           }
+        }
+        .sidebar-menu .treeview-menu > li:hover > a {
+          background: #777777;;
         }
         .sidebar-collapse li.treeview span {
           box-shadow: 3px -2px 3px #ccc;
@@ -202,18 +229,35 @@
         }
 
         .sidebar-mini.sidebar-collapse .main-header .navbar {
-          margin-left: 49px;
+          margin-left: 44px;
         }
-        @media (max-width: 768px) {
+        .form-control {
+          height: 25px;
+          padding: 0px 0px 0px 5px;
+          font-size: 13px;
+          min-height: 28px;
+        }
+        @media (min-width: 768px) {
+
+          .hover:hover, .inline-help:hover, input[type="color"]:hover, .insert:hover, table > tbody > tr:hover,
+          .table-striped > tbody > tr:hover:nth-child(2n+1) > td {
+            color: white;
+            background-color: #1391b1;
+          }
+
+          body.sidebar-mini.sidebar-collapse .content-wrapper, .sidebar-mini.sidebar-collapse .right-side, .sidebar-mini.sidebar-collapse .main-footer {
+            margin-left: 45px;
+          }
           .sidebar-mini.sidebar-collapse .main-header .navbar {
             margin-left: 0px;
           }
-        }
-        @media (min-width: 768px) {
           .sidebar-mini.sidebar-collapse .sidebar-menu > li:hover > a > span:not(.pull-right), .sidebar-mini.sidebar-collapse .sidebar-menu > li:hover > .treeview-menu {
-            left: 49px;
+            left: 44px;
             border-left: 1px solid #ccc;
             cursor: auto;
+          }
+          body.sidebar-mini.sidebar-collapse .main-sidebar {
+            width: 45px;
           }
         }
 
@@ -246,25 +290,34 @@
         body {
           font-size: small;
         }
-
+        .info-box-icon, .info-box, i {
+          -webkit-transition: all 0s linear;
+          -o-transition: all 0s linear;
+          transition: all 0s linear;
+        }
+        .sidebar-menu > li {
+          -webkit-transition: border-left-color 0s ease;
+          -o-transition: border-left-color 0s ease;
+          transition: border-left-color 0s ease;
+        }
         .main-header .navbar {
-          -webkit-transition: margin-left 0.1s ease-in-out;
-          -o-transition: margin-left 0.1s ease-in-out;
-          transition: margin-left 0.1s ease-in-out;
+          -webkit-transition: margin-left 0s ease-in-out;
+          -o-transition: margin-left 0s ease-in-out;
+          transition: margin-left 0s ease-in-out;
         }
 
         .main-sidebar, .left-side {
-          -webkit-transition: -webkit-transform 0.1s ease-in-out, width 0.1s ease-in-out;
-          -moz-transition: -moz-transform 0.1s ease-in-out, width 0.1s ease-in-out;
-          -o-transition: -o-transform 0.1s ease-in-out, width 0.1s ease-in-out;
-          transition: transform 0.1s ease-in-out, width 0.1s ease-in-out;
+          -webkit-transition: -webkit-transform 0s ease-in-out, width 0s ease-in-out;
+          -moz-transition: -moz-transform 0s ease-in-out, width 0s ease-in-out;
+          -o-transition: -o-transform 0s ease-in-out, width 0s ease-in-out;
+          transition: transform 0s ease-in-out, width 0s ease-in-out;
         }
 
         .content-wrapper, .right-side, .main-footer {
-          -webkit-transition: -webkit-transform 0.1s ease-in-out, margin 0.1s ease-in-out;
-          -moz-transition: -moz-transform 0.1s ease-in-out, margin 0.1s ease-in-out;
-          -o-transition: -o-transform 0.1s ease-in-out, margin 0.1s ease-in-out;
-          transition: transform 0.1s ease-in-out, margin 0.1s ease-in-out;
+          -webkit-transition: -webkit-transform 0s ease-in-out, margin 0s ease-in-out;
+          -moz-transition: -moz-transform 0s ease-in-out, margin 0s ease-in-out;
+          -o-transition: -o-transform 0s ease-in-out, margin 0s ease-in-out;
+          transition: transform 0s ease-in-out, margin 0s ease-in-out;
         }
 
         .logo {
@@ -444,7 +497,6 @@
           disableScrollEvents();
           disableFixedHeader();
           setupColumnResizing();
-          setupFilterInputHighlighting();
           fixTableColumns();
       });
   };
@@ -497,16 +549,6 @@
       } catch (error) {
           console.error('Error in column resizing:', error);
       }
-  };
-
-  const setupFilterInputHighlighting = () => {
-      $(document)
-          .off('keyup', '.filter-input')
-          .on('keyup', '.filter-input', function() {
-              $(this).css('background-color',
-                  $(this).val().length ? '#FFDC00' : 'lightblue'
-              );
-          });
   };
 
   // Initialize script
