@@ -24,8 +24,19 @@ Un userscript ayant pour but d'améliorer le site du BOLC et ses fonctionnalité
 
 # Bugs connus
  - Réajuster la largeur d'une colonne en fin de tableau fait bouger la vue vers la gauche.
+ - (Bug de Newmips) Le bouton suivant ne marche pas après la deuxième page.
 
 # Aperçu
+
+Video de la pagination flottante
+
+_Toujours disponible et visible, elle peut être déplacée momentanément en cas de gêne._
+![shot on 2024-November-22@21h55(03)](https://github.com/user-attachments/assets/0f54edca-f2ba-410a-9801-eb23989df28d)
+
+
+Video  
+![shot on 2024-November-22@21h04(23)](https://github.com/user-attachments/assets/567cf31a-3e81-49b3-a41b-23fa385b0549)  
+
 
 Avant 
 ![389043988-d68793bb-0398-4c97-bd38-bb82627a633a](https://github.com/user-attachments/assets/67bc46d6-5f7f-4b69-af9d-528aa8fe0e57)
