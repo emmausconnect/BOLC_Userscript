@@ -4,7 +4,7 @@ Un userscript ayant pour but d'améliorer le site du BOLC et ses fonctionnalité
 # Fonctionnalités de ce script 
 
 ## Tableau
-  - Pagination flottante, pour faclement changer de page.
+  - Pagination flottante, pour facilement changer de page.
   - La pagination flottante est déplaçable de gauche à droite en cas d'occlusion d'un élèment.
   - Optimise les pages ayant des tableaux pour qu'elles utilisent tout l'espace disponible en minimisant le padding et la marge.
   - Réduit le padding des cases dans les tableaux pour optimiser l'espace.  
@@ -23,8 +23,9 @@ Un userscript ayant pour but d'améliorer le site du BOLC et ses fonctionnalité
   - Supprime tous les délais d'animation.
 
 # Bugs connus
- - Réajuster la largeur d'une colonne en fin de tableau fait bouger la vue vers la gauche.
- - (Bug de Newmips) Le bouton suivant ne marche pas après la deuxième page.
+  - Réajuster la largeur d'une colonne à la fin du tableau fait bouger la vue vers la gauche.  
+  - Problème de contraste au survol des URL et des emails bleus.  
+  - (Bug de Newmips) Le bouton "Suivant" ne fonctionne pas après la deuxième page.
 
 # Aperçu
 
