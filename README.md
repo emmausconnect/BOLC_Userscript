@@ -28,10 +28,11 @@ Un userscript ayant pour but d'améliorer le site du BOLC et ses fonctionnalité
 # Aperçu
 
 Avant 
-![shot on 2024-November-22@18h44(55)](https://github.com/user-attachments/assets/d68793bb-0398-4c97-bd38-bb82627a633a)
+![389043988-d68793bb-0398-4c97-bd38-bb82627a633a](https://github.com/user-attachments/assets/67bc46d6-5f7f-4b69-af9d-528aa8fe0e57)
+
 
 Après
-![shot on 2024-November-22@18h45(06)](https://github.com/user-attachments/assets/fc047b45-06c6-4080-ad70-e3a9506016af)
+![389043975-fc047b45-06c6-4080-ad70-e3a9506016af](https://github.com/user-attachments/assets/ddbcfd85-1dd1-4a21-86d8-e7f1ea2933b8)
 
 
 # Installation
