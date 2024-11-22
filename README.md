@@ -1,4 +1,4 @@
-# BOLC_Userscript
+# BOLScript
 Un userscript ayant pour but d'améliorer le site du BOLC et ses fonctionnalités.
 
 # Fonctionnalités de ce script 
