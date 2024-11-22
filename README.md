@@ -1,6 +1,13 @@
 # BOLCScript
 Un userscript ayant pour but d'améliorer le site du BOLC et ses fonctionnalités.
 
+# Installation
+
+Installer sur le navigateur une extension gestionnaire d'userscripts tel que Violentmonkey où Tampermonkey.  
+
+Puis [Cliquer-ici](https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js) pour installer l'userscript. 
+
+
 # Fonctionnalités de ce script 
 
 ## Tableau
@@ -47,9 +54,4 @@ Après
 ![389043975-fc047b45-06c6-4080-ad70-e3a9506016af](https://github.com/user-attachments/assets/ddbcfd85-1dd1-4a21-86d8-e7f1ea2933b8)
 
 
-# Installation
-
-Installer sur le navigateur une extension gestionnaire d'userscripts tel que Violentmonkey où Tampermonkey.  
-
-Puis [Cliquer-ici](https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js) pour installer l'userscript. 
 
