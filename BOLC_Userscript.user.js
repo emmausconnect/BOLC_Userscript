@@ -7,7 +7,7 @@
 // @downloadURL https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @updateURL   https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @grant       none
-// @version     1.5
+// @version     1.0
 // @author      Joffrey SCHROEDER / @Write on Github
 // ==/UserScript==
 
@@ -21,14 +21,20 @@
   const CONFIG = {
       DEBUG: false,
       ANIMATION_SPEED: 0,
+      MIN_COL_WIDTH: 70,
       TABLE_DISPLAY_OPTIONS: [1000, 2000, 3000, 5000, 10000],
       PATHS_WITH_TABLEAU: [
           "/materiel_disponible/list",
           "/materiel_pa/list",
+          "/contact/list",
           "/don/list",
+          "/donateur/list",
           "/relais/list",
           "/reconditionnement/list",
-          "/personne_morale/list"
+          //"/personne_morale/list",
+          "/besoin_relais/list",
+          "/ticket_sav/list",
+          "/log_import/list"
       ]
   };
 
@@ -102,6 +108,8 @@
    * ----------------
    * */
   const init = () => {
+
+
       // Log load context
       if (window.top === window.self) {
           logger.log(`(main) Loaded on: ${utils.currentUrl}`);
@@ -239,6 +247,9 @@
           font-size: 13px;
           min-height: 28px;
         }
+        tr:hover td a {
+            color: white;
+        }
         @media (min-width: 768px) {
           .hover:hover, .inline-help:hover, input[type="color"]:hover, .insert:hover, table > tbody > tr:hover,
           .table-striped > tbody > tr:hover:nth-child(2n+1) > td {
@@ -349,8 +360,15 @@
 
   const applyTableauStyles = () => {
           const tableauStyle = `
+
+          tr td a:hover {
+              color: #fafafa;
+          }
           .paging_simple_numbers .pagination .paginate_button:hover a {
             background: #095f68;
+          }
+          tr td a:hover {
+              color: #fafafa;
           }
           .paging_simple_numbers .pagination .paginate_button.active a {
             background: #09acbe;
@@ -525,41 +543,75 @@
   };
 
   const setupColumnResizing = () => {
-      // Wait for DataTables to be fully initialized
-      const $dataTable = $('.dataTable');
-      if (!$.fn.DataTable.isDataTable($dataTable)) {
-          console.warn('DataTable not initialized yet');
-          return;
-      }
+    // Wait for DataTables to be fully initialized
+    const $dataTable = $('.dataTable');
+    if (!$.fn.DataTable.isDataTable($dataTable)) {
+        console.warn('DataTable not initialized yet');
+        return;
+    }
 
-      const dtable = $dataTable.DataTable();
-      $dataTable.css('table-layout', 'fixed');
+    document.addEventListener('mousedown', function(e) {
+        // Vérifier si on clique sur une poignée de redimensionnement
+        if (
+            e.target.classList.contains('DTCR_tableHeader') ||
+            e.target.classList.contains('DTCR_tableHeaderHover')
+        ) {
+            // Pendant le drag uniquement
+            const mouseMoveHandler = function(e) {
+                const columns = document.querySelectorAll('th');
+                columns.forEach(col => {
+                    if (col.offsetWidth < CONFIG.MIN_COL_WIDTH) {
+                        col.style.width = `${CONFIG.MIN_COL_WIDTH}px`;
+                    }
+                });
+            };
 
-      try {
-          dtable.columns().every(function() {
-              const $header = $(this.header());
-              // Only apply min-width if the column header exists
-              if ($header.length) {
-                  $header.css({
-                      'min-width': '50px',
-                      'overflow': 'hidden',
-                      'text-overflow': 'ellipsis'
-                  });
-              }
-          });
+            // Nettoyer quand on relâche
+            const mouseUpHandler = function() {
+                // Vérifier une dernière fois après un court délai
+                setTimeout(() => {
+                    const columns = document.querySelectorAll('th');
+                    columns.forEach(col => {
+                        if (col.offsetWidth < CONFIG.MIN_COL_WIDTH) {
+                            col.style.width = `${CONFIG.MIN_COL_WIDTH}px`;
+                        }
+                    });
+                }, 50); // petit délai pour laisser DataTables finir son traitement
 
-          dtable.on('draw', () => {
-              const paginateContainer = document.querySelector('.dataTables_paginate');
-              if (paginateContainer) {
-                  createMovablePaginationButton(paginateContainer);
-              }
-          });
+                document.removeEventListener('mousemove', mouseMoveHandler);
+                document.removeEventListener('mouseup', mouseUpHandler);
+            };
 
-          // Adjust column widths after initialization
-          dtable.columns.adjust();
-      } catch (error) {
-          console.error('Error in column resizing:', error);
-      }
+            document.addEventListener('mousemove', mouseMoveHandler);
+            document.addEventListener('mouseup', mouseUpHandler);
+        }
+    });
+
+    // Applique l'overflow.. + hidden.
+    const dtable = $dataTable.DataTable();
+    $dataTable.css('table-layout', 'fixed');
+    try {
+        dtable.columns().every(function() {
+            const $header = $(this.header());
+            if ($header.length) {
+                $header.css({
+                    'min-width': `${CONFIG.MIN_COL_WIDTH}px`,
+                    'overflow': 'hidden',
+                    'text-overflow': 'ellipsis'
+                });
+            }
+        });
+        dtable.on('draw', () => {
+            const paginateContainer = document.querySelector('.dataTables_paginate');
+            if (paginateContainer) {
+                createMovablePaginationButton(paginateContainer);
+            }
+        });
+        // Adjust column widths after initialization
+        dtable.columns.adjust();
+    } catch (error) {
+        console.error('Error in column resizing:', error);
+    }
   };
 
   // Initialize script
