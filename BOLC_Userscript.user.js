@@ -21,7 +21,7 @@
    * */
   const CONFIG = {
       DEBUG: false,
-      ANIMATION_SPEED: 1,
+      ANIMATION_SPEED: 0,
       MIN_COL_WIDTH: 70,
       TABLE_DISPLAY_OPTIONS: [1000, 2000, 3000, 5000, 10000],
       PATHS_WITH_TABLEAU: [
@@ -173,7 +173,6 @@
       // Apply styles for specific paths
       if (CONFIG.PATHS_WITH_TABLEAU.some(path => utils.currentPagepath.startsWith(path))) {
           applyTableauStyles();
-          // setupFloatingPagination();
           setupTableInteractions();
       }
 
@@ -489,16 +488,10 @@
       utils.paste(tableauStyle);
   };
 
-  // const setupFloatingPagination = () => {
-  //     const checkExist = setInterval(() => {
-  //         const paginateContainer = document.querySelector('.dataTables_paginate');
-  //         if (paginateContainer) {
-  //             clearInterval(checkExist);
-  //             createMovablePaginationButton(paginateContainer);
-  //         }
-  //     }, 100);
-  // };
-
+  /* Not used right now. Injected directly via a <script> tag
+   * Workaround for inject-into content
+   * */
+  /*
   const createMovablePaginationButton = (paginateContainer) => {
       if (paginateContainer.querySelector('.move_button')) return;
 
@@ -545,45 +538,61 @@
       // Empêcher le texte de se sélectionner pendant le déplacement
       moveButton.addEventListener('dragstart', (e) => e.preventDefault());
   };
+  */
 
   const setupTableInteractions = () => {
-      document.addEventListener('DOMContentLoaded', () => {
+      const initialize = () => {
           disableScrollEvents();
           disableFixedHeader();
-          setupColumnResizing();
+          setupTableResizing();
+          setupDataTableOverflow();
           fixTableColumns();
-      });
+      };
+
+      if (document.readyState === "loading") {
+          // Le document n'est pas encore prêt, on attend l'événement DOMContentLoaded
+          document.addEventListener('DOMContentLoaded', initialize);
+      } else {
+          // Le document est déjà prêt, on initialise directement
+          initialize();
+      }
   };
 
   const fixTableColumns = () => {
       utils.checkElement('.dataTable').then((dataTable) => {
           logger.log('Fixing table column widths');
-          $(dataTable).find('th:nth-last-child(-n+3)').css('width', '90px');
+          const lastThreeHeaders = dataTable.querySelectorAll('th:nth-last-child(-n+3)');
+          lastThreeHeaders.forEach(th => {
+              th.style.width = '90px';
+          });
       });
   };
 
   const disableScrollEvents = () => {
-      $(document).on('scroll', (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-      });
+    document.addEventListener('scroll', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+    });
   };
 
   const disableFixedHeader = () => {
-      $('#table_id').on('page.dt draw.dt', () => {
-          $('.fixedHeader-floating').remove();
-      });
+      const table = document.querySelector('#table_id');
+
+      if (table) {
+          table.addEventListener('page.dt', () => {
+              document.querySelectorAll('.fixedHeader-floating').forEach(el => el.remove());
+          });
+
+          table.addEventListener('draw.dt', () => {
+              document.querySelectorAll('.fixedHeader-floating').forEach(el => el.remove());
+          });
+      }
+
   };
 
-  const setupColumnResizing = () => {
-    // Wait for DataTables to be fully initialized
-    const $dataTable = $('.dataTable');
-    if (!$.fn.DataTable.isDataTable($dataTable)) {
-        console.warn('DataTable not initialized yet');
-        return;
-    }
-
+  const setupTableResizing = () => {
     document.addEventListener('mousedown', function(e) {
+        console.log("mousedown listenerd")
         // Vérifier si on clique sur une poignée de redimensionnement
         if (
             e.target.classList.contains('DTCR_tableHeader') ||
@@ -592,6 +601,7 @@
             // Pendant le drag uniquement
             const mouseMoveHandler = function(e) {
                 const columns = document.querySelectorAll('th');
+              console.log("dragging")
                 columns.forEach(col => {
                     if (col.offsetWidth < CONFIG.MIN_COL_WIDTH) {
                         col.style.width = `${CONFIG.MIN_COL_WIDTH}px`;
@@ -619,33 +629,100 @@
             document.addEventListener('mouseup', mouseUpHandler);
         }
     });
+  }
 
-    // Applique l'overflow.. + hidden.
-    const dtable = $dataTable.DataTable();
-    $dataTable.css('table-layout', 'fixed');
-    try {
-        dtable.columns().every(function() {
-            const $header = $(this.header());
-            if ($header.length) {
-                $header.css({
-                    'min-width': `${CONFIG.MIN_COL_WIDTH}px`,
-                    'overflow': 'hidden',
-                    'text-overflow': 'ellipsis'
+  const setupDataTableOverflow = () => {
+    (function () {
+        const script = document.createElement('script');
+        script.textContent = `
+
+            const createMovablePaginationButton = (paginateContainer) => {
+                if (paginateContainer.querySelector('.move_button')) return;
+
+                const moveButton = document.createElement('li');
+                moveButton.classList.add('paginate_button', 'move_button');
+                moveButton.innerHTML = '<a href="#" style="cursor: grab;">🖐</a>';
+
+                paginateContainer.querySelector('ul').prepend(moveButton);
+
+                let isMoving = false;
+                let startX = 0;
+                let startRight = parseInt(window.getComputedStyle(paginateContainer).right, 10) || 0;
+                moveButton.querySelector('a').addEventListener('click', (e) => {
+                    e.preventDefault();
                 });
+
+                moveButton.addEventListener('mousedown', (e) => {
+                    isMoving = true;
+                    startX = e.pageX;
+                    startRight = parseInt(window.getComputedStyle(paginateContainer).right, 10) || 0;
+                    e.preventDefault();
+                    moveButton.querySelector('a').style.cursor = 'grabbing';
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isMoving) return;
+                    const moveX = e.pageX - startX;
+                    const minRight = 0;
+                    const maxRight = window.innerWidth - paginateContainer.offsetWidth;
+                    const newRight = startRight - moveX;
+                    paginateContainer.style.setProperty('right', \`\${Math.min(Math.max(newRight, minRight), maxRight)}px\`, 'important');
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isMoving = false;
+                    moveButton.querySelector('a').style.cursor = 'grab';
+                });
+
+                moveButton.addEventListener('dragstart', (e) => e.preventDefault());
+            };
+
+            const $dataTable = $('.dataTable');
+            if (!$.fn.DataTable.isDataTable($dataTable)) {
+                console.warn('DataTable not initialized yet');
             }
-        });
-        dtable.on('draw', () => {
-            const paginateContainer = document.querySelector('.dataTables_paginate');
-            if (paginateContainer) {
-                createMovablePaginationButton(paginateContainer);
+
+            const dtable = $dataTable.DataTable();
+            $dataTable.css('table-layout', 'fixed');
+
+            try {
+                dtable.columns().every(function() {
+                    const $header = $(this.header());
+                    if ($header.length) {
+                        $header.css({
+                            'min-width': '${CONFIG.MIN_COL_WIDTH}px',
+                            'overflow': 'hidden',
+                            'text-overflow': 'ellipsis'
+                        });
+                    }
+                });
+
+                dtable.on('draw', () => {
+                    const columns = document.querySelectorAll('th');
+                    console.log('draw')
+                    setTimeout(() => {
+                    const columns = document.querySelectorAll('th');
+                      columns.forEach(col => {
+                          if (col.offsetWidth < ${CONFIG.MIN_COL_WIDTH}) {
+                              col.style.width = '${CONFIG.MIN_COL_WIDTH}px';
+                          }
+                      });
+                    }, 50);
+                    const paginateContainer = document.querySelector('.dataTables_paginate');
+                    if (paginateContainer) {
+                        createMovablePaginationButton(paginateContainer);
+                    }
+                });
+
+                dtable.columns.adjust();
+            } catch (error) {
+                console.error('Error in column resizing:', error);
             }
-        });
-        // Adjust column widths after initialization
-        dtable.columns.adjust();
-    } catch (error) {
-        console.error('Error in column resizing:', error);
-    }
+        `;
+        document.documentElement.appendChild(script);
+    })();
   };
+
 
   // Initialize script
   init();
