@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        B0LC / newmips.cloud
+// @name        BOLC / newmips.cloud
 // @namespace   BOLC Newmips Patch
 // @match       https://lacollecte.newmips.cloud/*
 // @match       https://app-emmaus-cloud.newmips.run/*
@@ -179,6 +179,12 @@
 
       // Global styles
       const globalStyle = `
+        .fade {
+            transition: opacity 0s linear;
+            opacity: 1;
+            -webkit-transition: opacity 0s linear;
+            transition: opacity 0s linear;
+        }
         a[style^="color: rgb(60, 141, 188)"] {
           color: white;
           background: #09acbe;
@@ -458,6 +464,7 @@
             clear: both;
             margin-top: 0px;
             margin-bottom: 0px;
+            table-layout: fixed;
           }
           section.content-header, section.content, div.content-wrapper {
             background: white;
