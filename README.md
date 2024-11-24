@@ -31,8 +31,8 @@ Puis [Cliquer-ici](https://raw.githubusercontent.com/emmausconnect/BOLC_Userscri
 
 # Bugs connus
   - Réajuster la largeur d'une colonne à la fin du tableau fait bouger la vue vers la gauche.  
-  - Problème de contraste au survol des URL et des emails bleus.  
   - (Bug de Newmips) Le bouton "Suivant" ne fonctionne pas après la deuxième page.
+  - ~~Problème de contraste au survol des URL et des emails bleus.~~ (Corrigé)
 
 # Aperçu
 
