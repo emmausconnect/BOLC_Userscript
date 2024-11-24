@@ -9,6 +9,7 @@
 // @grant       none
 // @version     1.0
 // @author      Joffrey SCHROEDER / @Write on Github
+// @inject-into content
 // ==/UserScript==
 
 (function() {
@@ -20,7 +21,7 @@
    * */
   const CONFIG = {
       DEBUG: false,
-      ANIMATION_SPEED: 0,
+      ANIMATION_SPEED: 1,
       MIN_COL_WIDTH: 70,
       TABLE_DISPLAY_OPTIONS: [1000, 2000, 3000, 5000, 10000],
       PATHS_WITH_TABLEAU: [
@@ -109,7 +110,6 @@
    * */
   const init = () => {
 
-
       // Log load context
       if (window.top === window.self) {
           logger.log(`(main) Loaded on: ${utils.currentUrl}`);
@@ -126,13 +126,39 @@
           targetElement.innerHTML += ` - BOLCScript v${scriptVersion}`;
       }
 
-      // Accelerate animations
-      $.AdminLTE.options.animationSpeed = CONFIG.ANIMATION_SPEED;
-      $.AdminLTE.tree('.sidebar');
-      $('.box').each(function () {
-          $.AdminLTE.boxWidget.activate(this);
-      });
-      $.AdminLTE.boxWidget.activate();
+      // Inject le code directement dans le contexte principale.
+      // Obligatoire car nous utilisons @inject-into content
+      // Pour la compatibilité avec Safari.
+      (function () {
+          const script = document.createElement('script');
+          script.textContent = `
+              (function() {
+                  const animationSpeed = ${CONFIG.ANIMATION_SPEED};
+                  const interval = setInterval(() => {
+                      if (window.jQuery && window.jQuery.AdminLTE) {
+                          clearInterval(interval);
+
+                          // Configure animations
+                          $.AdminLTE.options.animationSpeed = animationSpeed;
+
+                          // Initialize the sidebar tree
+                          $.AdminLTE.tree('.sidebar');
+
+                          // Activate all box widgets
+                          $('.box').each(function () {
+                              $.AdminLTE.boxWidget.activate(this);
+                          });
+
+                          // Activate global box widget
+                          $.AdminLTE.boxWidget.activate();
+                      }
+                  }, 50); // Check every 50ms if jQuery is loaded
+              })();
+          `;
+          document.documentElement.appendChild(script);
+          script.remove();
+      })();
+
 
       // Extend table display options
       utils.checkElement('select[name]').then((selector) => {
@@ -349,8 +375,8 @@
           padding: 10px 0px 10px 5px !important;
         }
         .animated {
-          -webkit-animation-duration: 0.1s;
-          animation-duration: 0.1;
+          -webkit-animation-duration: 0s;
+          animation-duration: 0;
           scale: both;
           animation-fill-mode: unset;
         }
@@ -514,7 +540,7 @@
   };
 
   const setupTableInteractions = () => {
-      $(document).ready(() => {
+      document.addEventListener('DOMContentLoaded', () => {
           disableScrollEvents();
           disableFixedHeader();
           setupColumnResizing();
