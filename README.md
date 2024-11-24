@@ -22,7 +22,7 @@ Puis [Cliquer-ici](https://raw.githubusercontent.com/emmausconnect/BOLC_Userscri
   - Bloque l'affichage de l'entête sticky du tableau, pendant le défilement, pour éviter divers bugs. 
   - ~~Réduit les éléments du header à 10 caractères, puis ajoute une ellipsis (…) pour optimiser la taille prise en hauteur.~~  
 
-## Changement globaux
+## Changements globaux
   - Réduit la taille de la police de manière globale ainsi que dans les tableaux pour optimiser l'espace.
   - Réduit la taille du header qui prend trop de place en hauteur à l'origine.
   - Réduit la largeur de la sidebar.
@@ -30,6 +30,7 @@ Puis [Cliquer-ici](https://raw.githubusercontent.com/emmausconnect/BOLC_Userscri
   - Supprime tous les délais d'animation.
 
 # Bugs connus
+  - Si l'en-tête du tableau n'est pas visible (par exemple, en bas de page), changer de page via la pagination réinitialise la largeur des colonnes. Elles deviennent alors non cliquables (on ne peut plus changer l'ordre) et on ne peut plus changer leur largeur. Il faut recharger la page. J'espère fixer ce bug au plus vite.
   - Réajuster la largeur d'une colonne à la fin du tableau fait bouger la vue vers la gauche.  
   - (Bug de Newmips) Le bouton "Suivant" ne fonctionne pas après la deuxième page.
   - ~~Problème de contraste au survol des URL et des emails bleus.~~ (Corrigé)
