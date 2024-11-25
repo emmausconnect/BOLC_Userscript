@@ -13,6 +13,7 @@ Puis [Cliquer-ici](https://raw.githubusercontent.com/emmausconnect/BOLC_Userscri
 ## Tableau
   - Pagination flottante, pour facilement changer de page.
   - La pagination flottante est déplaçable de gauche à droite en cas d'occlusion d'un élèment.
+  - Sauvegarde la page actuelle (pagination) dans le fragment URL. Permettant de revenir à la même page en rafraichissant la page.
   - Optimise les pages ayant des tableaux pour qu'elles utilisent tout l'espace disponible en minimisant le padding et la marge.
   - Réduit le padding des cases dans les tableaux pour optimiser l'espace.  
   - Ajoute white-space: nowrap et overflow: hidden aux cases des tableaux.
@@ -30,7 +31,8 @@ Puis [Cliquer-ici](https://raw.githubusercontent.com/emmausconnect/BOLC_Userscri
   - Supprime tous les délais d'animation.
 
 # Bugs connus
-  - Si l'en-tête du tableau n'est pas visible (par exemple, en bas de page), changer de page via la pagination réinitialise la largeur des colonnes. Elles deviennent alors non cliquables (on ne peut plus changer l'ordre) et on ne peut plus changer leur largeur. Il faut recharger la page. J'espère fixer ce bug au plus vite.
+  - Race condition avec le chargement de la pagination dans le fragment URL.
+  - (Fix temporaire implémenté : Scroll To Top automatique au changement de page) - Si l'en-tête du tableau n'est pas visible (par exemple, en bas de page), changer de page via la pagination réinitialise la largeur des colonnes. Elles deviennent alors non cliquables (on ne peut plus changer l'ordre) et on ne peut plus changer leur largeur. Il faut recharger la page. J'espère fixer ce bug au plus vite.
   - Réajuster la largeur d'une colonne à la fin du tableau fait bouger la vue vers la gauche.  
   - (Bug de Newmips) Le bouton "Suivant" ne fonctionne pas après la deuxième page.
   - ~~Problème de contraste au survol des URL et des emails bleus.~~ (Corrigé)
