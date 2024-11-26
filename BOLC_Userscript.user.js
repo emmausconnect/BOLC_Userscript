@@ -234,7 +234,7 @@
       .btn.btn-primary,
       .btn.btn-warning,
       .btn.btn-danger {
-        padding: 5px;
+        padding: 4px;
       }
       .dt-button[title^="Réinitialiser"]:after {
         content: ' RàZ Recherche';
@@ -456,7 +456,6 @@
 
   const applyTableauStyles = () => {
       const tableauStyle = `
-
         tr td a:hover {
             color: #fafafa;
         }
@@ -561,6 +560,7 @@
           setupDataTableOverflow();
           fixTableColumns();
           setupResetButtonHandler();
+          moveBackButton();
       };
 
       if (document.readyState === "loading") {
@@ -751,6 +751,37 @@
 
       // Inject the script into the page
       document.documentElement.appendChild(script);
+  };
+
+  const moveBackButton = () => {
+    const backButton = document.querySelector('a[href="javascript:history.back();"]');
+    const createButtonElement = document.querySelector('a[href="/donateur/create_form"] button');
+    const createButton = createButtonElement ? createButtonElement.parentElement : null;
+    const targetElement = document.querySelector('.connectedSortable');
+
+    if (targetElement) {
+      // Crée un conteneur pour les boutons
+      const buttonContainer = document.createElement('div');
+      buttonContainer.style.display = 'flex';
+      buttonContainer.style.justifyContent = 'flex-start';
+      buttonContainer.style.gap = '10px';
+      buttonContainer.style.marginBottom = '10px';
+
+      // Clone et ajoute le bouton "back" au conteneur
+      if (backButton) {
+        const clone = backButton.cloneNode(true);
+        buttonContainer.appendChild(clone);
+      }
+
+      // Clone et ajoute le bouton "create" au conteneur
+      if (createButton) {
+        const createClone = createButton.cloneNode(true);
+        buttonContainer.appendChild(createClone);
+      }
+
+      // Insère le conteneur avant la cible
+      targetElement.parentNode.insertBefore(buttonContainer, targetElement);
+    }
   };
 
   const setupTableResizing = () => {
