@@ -807,6 +807,21 @@
               }
           };
 
+          const expandHiddenText = () => {
+              const hiddenElements = document.querySelectorAll('.np_text_modal span');
+              hiddenElements.forEach(innerSpan => {
+                  const parentSpan = innerSpan.closest('.np_text_modal');
+                  if (parentSpan) {
+                    // On garde le span intérieur intact mais on met son texte comme contenu direct du parent
+                    const spanText = innerSpan.textContent.trim();
+                    // On préserve le span intérieur en le retirant temporairement
+                    const hiddenSpan = innerSpan.cloneNode(true);
+                    parentSpan.textContent = spanText; // Ceci efface tout le contenu
+                    parentSpan.appendChild(hiddenSpan); // On remet le span caché
+                  }
+              });
+          };
+
           const createMovablePaginationButton = (paginateContainer) => {
               if (paginateContainer.querySelector('.move_button')) return;
               const moveButton = document.createElement('li');
@@ -911,6 +926,7 @@
                      dtable.on('draw', () => {
                          logger2.log('Table draw event');
                          setTimeout(() => {
+                             expandHiddenText();
                              const columns = document.querySelectorAll('th');
                              columns.forEach(col => {
                                  if (col.offsetWidth < '${CONFIG.MIN_COL_WIDTH}') {
