@@ -348,10 +348,12 @@
         margin-left: 170px;
       }
       @media (min-width: 768px) {
-        .hover:hover, .inline-help:hover, input[type="color"]:hover, .insert:hover, table > tbody > tr:hover,
-        .table-striped > tbody > tr:hover:nth-child(2n+1) > td {
+        .hover:hover, .inline-help:hover, input[type="color"]:hover, .insert:hover, table > tbody > tr:hover {
           color: white;
-          background-color: #1391b1;
+          background-color: #27a6c7;
+        }
+        .table-striped > tbody > tr:hover:nth-child(2n+1) > td {
+          background-color: #1f5d6c;
         }
         body.sidebar-mini.sidebar-collapse .content-wrapper, .sidebar-mini.sidebar-collapse .right-side, .sidebar-mini.sidebar-collapse .main-footer {
           margin-left: 45px;
