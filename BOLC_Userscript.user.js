@@ -233,6 +233,7 @@
       .btn.btn-error,
       .btn.btn-primary,
       .btn.btn-warning,
+      .btn.btn-info,
       .btn.btn-danger {
         padding: 4px;
       }
