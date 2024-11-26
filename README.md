@@ -13,6 +13,8 @@ Puis [Cliquer-ici](https://raw.githubusercontent.com/emmausconnect/BOLC_Userscri
 ## Tableau
   - Pagination flottante, pour facilement changer de page.
   - La pagination flottante est déplaçable de gauche à droite en cas d'occlusion d'un élèment.
+  - Le bouton effacer la recherche a maintenant un texte pour être mieux visible.
+  - Le bouton effacer la recherche ne recharge plus la page lors de l'effacement.
   - Sauvegarde la page actuelle (pagination) dans le fragment URL. Permettant de revenir à la même page en rafraichissant la page.
   - Optimise les pages ayant des tableaux pour qu'elles utilisent tout l'espace disponible en minimisant le padding et la marge.
   - Réduit le padding des cases dans les tableaux pour optimiser l'espace.  
@@ -24,9 +26,9 @@ Puis [Cliquer-ici](https://raw.githubusercontent.com/emmausconnect/BOLC_Userscri
   - ~~Réduit les éléments du header à 10 caractères, puis ajoute une ellipsis (…) pour optimiser la taille prise en hauteur.~~  
 
 ## Changements globaux
+  - Réduit au maximum possible la largeur de la sidebar.
   - Réduit la taille de la police de manière globale ainsi que dans les tableaux pour optimiser l'espace.
   - Réduit la taille du header qui prend trop de place en hauteur à l'origine.
-  - Réduit la largeur de la sidebar.
   - Augmente le contraste des menus de la sidebar lorsqu'elle est pliée (au survol).
   - Supprime tous les délais d'animation.
 

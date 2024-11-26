@@ -20,7 +20,7 @@
    * ----------------
    * */
   const CONFIG = {
-      DEBUG: true,
+      DEBUG: false,
       ANIMATION_SPEED: 0,
       MIN_COL_WIDTH: 70,
       TABLE_DISPLAY_OPTIONS: [1000, 2000, 3000, 5000, 10000],
