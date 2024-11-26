@@ -11,6 +11,7 @@ Puis [Cliquer-ici](https://raw.githubusercontent.com/emmausconnect/BOLC_Userscri
 # Fonctionnalités de ce script 
 
 ## Tableau
+  - Copie les boutons "Retour" / "Créer" depuis le bas de page vers le haut de la page, quand l'un et/ou l'autre sont dispo.
   - Les textes des cellules sont désormais affichés intégralement sans être tronqués ni remplacés par des points de suspension (exemple : Adresse, Action à effectuer, etc.).
   - Pagination flottante permettant un changement de page simplifié.
   - La pagination flottante peut être déplacée latéralement (de gauche à droite) en cas d'occlusion par un élément.
