@@ -11,32 +11,32 @@ Puis [Cliquer-ici](https://raw.githubusercontent.com/emmausconnect/BOLC_Userscri
 # Fonctionnalités de ce script 
 
 ## Tableau
-  - Pagination flottante, pour facilement changer de page.
-  - La pagination flottante est déplaçable de gauche à droite en cas d'occlusion d'un élèment.
-  - Le bouton effacer la recherche a maintenant un texte pour être mieux visible.
-  - Le bouton effacer la recherche ne recharge plus la page lors de l'effacement.
-  - Sauvegarde la page actuelle (pagination) dans le fragment URL. Permettant de revenir à la même page en rafraichissant la page.
-  - Optimise les pages ayant des tableaux pour qu'elles utilisent tout l'espace disponible en minimisant le padding et la marge.
-  - Réduit le padding des cases dans les tableaux pour optimiser l'espace.  
-  - Ajoute white-space: nowrap et overflow: hidden aux cases des tableaux.
-  - Ajoute plus d'options dans le menu déroulant pour afficher plus d'éléments : 1000, 2000, 3000, 5000 et 10K.  
-  - Ajoute la possibilité de réduire la taille des colonne plus petites que ce qui est normalement autorisé.
-  - Autorise le réajustement de la largeur des colonnes même quand cela est normalement bloqué.
-  - Bloque l'affichage de l'entête sticky du tableau, pendant le défilement, pour éviter divers bugs. 
+  - Les textes des cellules sont désormais affichés intégralement sans être tronqués ni remplacés par des points de suspension (exemple : Adresse, Action à effectuer, etc.).
+  - Pagination flottante permettant un changement de page simplifié.
+  - La pagination flottante peut être déplacée latéralement (de gauche à droite) en cas d'occlusion par un élément.
+  - Le bouton "Effacer la recherche" dispose désormais d’un texte pour une meilleure visibilité.
+  - Le bouton "Effacer la recherche" ne provoque plus de rechargement de la page lors de l'effacement (uniquement pour les tableaux en plein écran).
+  - La page courante (pagination) est maintenant sauvegardée dans le fragment URL, permettant de revenir à la même page après un rafraîchissement.
+  - Optimisation de l’espace utilisé par les pages contenant des tableaux en réduisant les marges et les espacements inutiles.
+  - Réduction du padding des cellules dans les tableaux pour maximiser l’espace disponible.
+  - Ajout des propriétés CSS "white-space: nowrap" et "overflow: hidden" aux cellules des tableaux.
+  - Ajout de nouvelles options dans le menu déroulant pour afficher un plus grand nombre d’éléments : 1000, 2000, 3000, 5000 et 10 000.
+  - Possibilité de réduire la taille des colonnes au-delà des limites habituellement autorisées.
+  - Activation du réajustement de la largeur des colonnes même lorsque cette fonctionnalité est normalement bloquée.
   - ~~Réduit les éléments du header à 10 caractères, puis ajoute une ellipsis (…) pour optimiser la taille prise en hauteur.~~  
 
 ## Changements globaux
-  - Réduit au maximum possible la largeur de la sidebar.
-  - Réduit la taille de la police de manière globale ainsi que dans les tableaux pour optimiser l'espace.
-  - Réduit la taille du header qui prend trop de place en hauteur à l'origine.
-  - Augmente le contraste des menus de la sidebar lorsqu'elle est pliée (au survol).
-  - Supprime tous les délais d'animation.
+- Optimiser la largeur de la barre latérale en la réduisant au strict minimum.
+- Diminuer la taille de la police de manière globale, y compris dans les tableaux, pour maximiser l’utilisation de l’espace.
+- Réduire la hauteur du bandeau supérieur afin de minimiser l’espace occupé.
+- Améliorer le contraste des menus de la barre latérale lors du survol, lorsqu’elle est repliée.
+- Éliminer tous les délais liés aux animations.
 
 # Bugs connus
-  - Race condition avec le chargement de la pagination dans le fragment URL.
-  - (Fix temporaire implémenté : Scroll To Top automatique au changement de page) - Si l'en-tête du tableau n'est pas visible (par exemple, en bas de page), changer de page via la pagination réinitialise la largeur des colonnes. Elles deviennent alors non cliquables (on ne peut plus changer l'ordre) et on ne peut plus changer leur largeur. Il faut recharger la page. J'espère fixer ce bug au plus vite.
-  - Réajuster la largeur d'une colonne à la fin du tableau fait bouger la vue vers la gauche.  
-  - (Bug de Newmips) Le bouton "Suivant" ne fonctionne pas après la deuxième page.
+  - Problème de condition de concurrence avec le chargement de la pagination dans le fragment URL.  
+  - (Correctif temporaire implémenté : défilement automatique vers le haut lors du changement de page) - Si l'en-tête du tableau n'est pas visible (par exemple, en bas de page), le changement de page via la pagination réinitialise la largeur des colonnes. Elles deviennent alors non interactives (impossible de modifier l'ordre ou la largeur des colonnes). Un rechargement de la page est nécessaire. Ce bug sera corrigé dans les meilleurs délais.  
+  - Réajuster la largeur d'une colonne en bas du tableau provoque un déplacement latéral de la vue vers la gauche.  
+  - (Bug de Newmips) Le bouton "Suivant" devient inopérant à partir de la troisième page.  
   - ~~Problème de contraste au survol des URL et des emails bleus.~~ (Corrigé)
 
 # Aperçu
