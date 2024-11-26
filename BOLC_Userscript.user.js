@@ -7,7 +7,7 @@
 // @downloadURL https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @updateURL   https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @grant       none
-// @version     1.0
+// @version     1.1
 // @author      Joffrey SCHROEDER / @Write on Github
 // @inject-into content
 // ==/UserScript==
@@ -192,12 +192,59 @@
 
       // Global styles
       const globalStyle = `
+      .badge {
+        padding: 4px 7px;
+      }
+      .sidebar-menu > li > a {
+        padding: 10px 5px 10px 5px;
+      }
+      .sidebar-mini.sidebar-collapse .sidebar-menu > li > a {
+        padding: 10px 5px 10px 11px;
+      }
+      .sidebar-menu .treeview.active .fa.fa-angle-left.pull-right {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        margin-top: -8px;
+      }
+      .sidebar-menu .treeview.active .fa.fa-angle-left.pull-right {
+        right: 2px;
+        margin-top: -12px;
+      }
+      .sidebar-menu > li > a > .fa, .sidebar-menu > li > a > .glyphicon, .sidebar-menu > li > a > .ion {
+        width: 18px;
+      }
+      .sidebar-menu li > a > .fa-angle-left {
+        right: -5px;
+      }
+      .sidebar-menu li > a > .fa-angle-left, .sidebar-menu li > a > .pull-right-container > .fa-angle-left {
+        margin-right: 0px;
+      }
+      #tmp_text_modal {
+        background: #cccccc4f;
+      }
+      tbody tr td .btn.btn-default, tbody tr td .btn.btn-success, tbody tr td .btn.btn-error, tbody tr td .btn.btn-primary, tbody tr td .btn.btn-warning, tbody tr td .btn.btn-danger {
+        padding: 0px;
+        padding-left: 6px;
+        padding-right: 6px;
+      }
+      .btn.btn-default,
+      .btn.btn-success,
+      .btn.btn-error,
+      .btn.btn-primary,
+      .btn.btn-warning,
+      .btn.btn-danger {
+        padding: 5px;
+      }
+      .dt-button[title^="Réinitialiser"]:after {
+        content: ' RàZ Recherche';
+      }
       .fade {
           transition: opacity 0s linear;
           opacity: 1;
           -webkit-transition: opacity 0s linear;
           transition: opacity 0s linear;
-          background: #cccccc4f;
+          background: transparent;
       }
       a[style^="color: rgb(60, 141, 188)"] {
         color: white;
@@ -273,7 +320,7 @@
         display: none;
       }
       .main-header .sidebar-toggle {
-        padding: 5px 10px;
+        padding: 4px 10px;
       }
       .navbar-nav > li, sidebar-toggle {
         padding-top: 0px;
@@ -282,7 +329,7 @@
         min-height: 0;
         padding: 0px 15px 0 0;
         height: 32px;
-        margin-left: 230px;
+        margin-left: 170px;
       }
       .sidebar-mini.sidebar-collapse .main-header .navbar {
         margin-left: 44px;
@@ -295,6 +342,9 @@
       }
       tr:hover td a {
           color: white;
+      }
+      .content-wrapper, .right-side, .main-footer {
+        margin-left: 170px;
       }
       @media (min-width: 768px) {
         .hover:hover, .inline-help:hover, input[type="color"]:hover, .insert:hover, table > tbody > tr:hover,
@@ -372,7 +422,7 @@
       }
       aside.main-sidebar, .left-side {
         background-color: #fff;
-        width: 230px;
+        width: 170px;
         box-shadow: unset;
         border-right: 1px solid #ccc;
       }
@@ -392,7 +442,7 @@
         padding: 5px 0px 0px 0px;
       }
       .box-header {
-        padding: 10px 0px 10px 5px !important;
+        padding: 10px 0px 10px 5px;
       }
       .animated {
         -webkit-animation-duration: 0s;
@@ -510,6 +560,7 @@
           setupTableResizing();
           setupDataTableOverflow();
           fixTableColumns();
+          setupResetButtonHandler();
       };
 
       if (document.readyState === "loading") {
@@ -525,7 +576,6 @@
       const script = document.createElement('script');
       script.textContent = `
       (function() {
-          // Création d'un bridge pour le logger
           const logger = {
               log: (message) => {
                   document.dispatchEvent(new CustomEvent('BOLCScript_log', { detail: message }));
@@ -537,7 +587,6 @@
 
           logger.log('Script injected into main context');
 
-          // Attend que jQuery et DataTable soient disponibles
           const waitForDataTable = setInterval(() => {
               if (typeof jQuery === 'undefined' || typeof jQuery.fn.DataTable === 'undefined') {
                   logger.log('Waiting for jQuery and DataTable...');
@@ -554,22 +603,18 @@
                   const dataTable = table.DataTable();
                   if (dataTable) {
                       logger.log('DataTable found and initialized');
-
                       clearInterval(waitForDataTable);
 
-                      // Gestion du changement de page
                       dataTable.on('page.dt', function() {
-                          const currentPage = dataTable.page();
+                          const currentPage = dataTable.page() + 1; // Index starts at 1
                           logger.log('Page changed to: ' + currentPage);
 
-                          // Mise à jour de l'URL
                           const url = new URL(window.location);
                           url.hash = 'page=' + currentPage;
                           window.history.replaceState({}, '', url);
                           logger.log('URL updated: ' + url.toString());
                       });
 
-                      // Restauration de la page au chargement
                       const restorePage = () => {
                           logger.log('Attempting to restore page from URL');
                           const urlParams = new URLSearchParams(window.location.hash.slice(1));
@@ -578,13 +623,13 @@
                           if (pageFromUrl !== null) {
                               logger.log('Found page in URL: ' + pageFromUrl);
                               try {
-                                  const pageNumber = parseInt(pageFromUrl);
+                                  const pageNumber = parseInt(pageFromUrl) - 1; // Convert to 0-based index
                                   const pageInfo = dataTable.page.info();
 
                                   logger.log('Current page info: ' + JSON.stringify(pageInfo));
 
                                   if (pageNumber >= 0 && pageNumber < pageInfo.pages) {
-                                      logger.log('Setting page to: ' + pageNumber);
+                                      logger.log('Setting page to: ' + (pageNumber + 1));
                                       dataTable.page(pageNumber).draw('page');
                                   } else {
                                       logger.error('Page number out of bounds: ' + pageNumber + ' (total pages: ' + pageInfo.pages + ')');
@@ -597,11 +642,9 @@
                           }
                       };
 
-                      // Restaure la page après un court délai
                       logger.log('Setting up delayed page restoration');
                       setTimeout(restorePage, 100);
 
-                      // Écoute les changements de hash dans l'URL
                       window.addEventListener('hashchange', function() {
                           logger.log('URL hash changed');
                           const urlParams = new URLSearchParams(window.location.hash.slice(1));
@@ -609,7 +652,8 @@
                           if (pageFromUrl !== null) {
                               logger.log('Changing page from hash change: ' + pageFromUrl);
                               try {
-                                  dataTable.page(parseInt(pageFromUrl)).draw('page');
+                                  const pageNumber = parseInt(pageFromUrl) - 1; // Convert to 0-based index
+                                  dataTable.page(pageNumber).draw('page');
                               } catch (error) {
                                   logger.error('Error changing page from hash: ' + error.message);
                               }
@@ -623,10 +667,10 @@
               }
           }, 100);
       })();
-  `;
+      `;
 
       document.head.appendChild(script);
-  }
+  };
 
   const fixTableColumns = () => {
       utils.checkElement('.dataTable').then((dataTable) => {
@@ -658,6 +702,55 @@
           });
       }
 
+  };
+
+  const setupResetButtonHandler = () => {
+      const script = document.createElement('script');
+      script.textContent = `
+          const clearAllFilters = () => {
+              document.querySelectorAll('thead.filters tr.fields input.filter-input, thead.filters tr.fields select').forEach(element => {
+                  if (element.tagName.toLowerCase() === 'select') {
+                      element.selectedIndex = 0;
+                  } else {
+                      element.value = '';
+                  }
+                  element.dispatchEvent(new Event('keyup', { bubbles: true }));
+              });
+          };
+
+          const handleReset = (button) => {
+              // Get the table ID from aria-controls
+              const tableId = button.getAttribute('aria-controls');
+
+              // Clear the corresponding localStorage entry
+              const storageKey = 'newmips_filter_save_' + tableId;
+              localStorage.removeItem(storageKey);
+
+              // Clear all filter inputs
+              clearAllFilters();
+
+              // Optional: Log the action
+              console.log('Reset filters for table:', tableId);
+          };
+
+          // Setup event delegation for the reset button
+          document.addEventListener('click', (event) => {
+              // Find closest .dt-button ancestor of the clicked element
+              const button = event.target.closest('.dt-button[title^="Réinitialiser"]');
+
+              if (button) {
+                  // Prevent default behavior and stop propagation
+                  event.preventDefault();
+                  event.stopPropagation();
+
+                  // Handle the reset
+                  handleReset(button);
+              }
+          }, true); // Use capture phase to ensure we catch the event first
+      `;
+
+      // Inject the script into the page
+      document.documentElement.appendChild(script);
   };
 
   const setupTableResizing = () => {
