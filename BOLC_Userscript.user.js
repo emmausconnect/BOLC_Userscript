@@ -37,6 +37,9 @@
           "/besoin_relais/list",
           "/ticket_sav/list"
           //"/log_import/list"
+      ],
+      PATHS_WITH_TABLEAU_PAGINATION_ONLY: [
+        "/log_import/list"
       ]
   };
 
@@ -186,6 +189,12 @@
           setupTablePaginationMemory();
       } else {
           applyStyleIfNoTable();
+      }
+
+      if (CONFIG.PATHS_WITH_TABLEAU_PAGINATION_ONLY.some(path => utils.currentPagepath.startsWith(path))) {
+          applyTableauStyles();
+          setupDataTableOverflow();
+          setupTablePaginationMemory();
       }
 
   };
