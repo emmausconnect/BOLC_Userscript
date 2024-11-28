@@ -832,15 +832,17 @@
            display: none;
          }
         td a button {
-          margin-top: -4px;
-        }
-        td span.badge {
-          margin-top: -4px;
+          margin-top: 0px;
         }
         td span.badge {
           margin: 0px;
           display: block;
           padding: 2px 0px;
+        }
+        td span.badge {
+          padding-left: 5px;
+          padding-right: 5px;
+          margin-top: 2px;
         }
       `;
       utils.paste(tableauStyle);
@@ -854,6 +856,25 @@
 
   const applyGlobalStyle = () => {
       const globalStyle = `
+      .form-group {
+        margin-bottom: 5px;
+      }
+      #columnSelector {
+        height: unset;
+        width: 100%;
+        overflow: auto;
+        position: absolute;
+        background: #ffffffed;
+        border: 1px solid grey;
+        border-radius: 5px;
+        padding: 0px;
+        padding-left: 10px;
+      }
+      #columnSelector label {
+        display: inline-block;
+        margin-bottom: 0px;
+        font-weight: normal;
+      }
       .dt-buttons .dt-button {
         background: #04b8c4;
       }
