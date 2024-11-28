@@ -21,7 +21,7 @@
    * */
 
   const CONFIG = {
-      DEBUG: true,
+      DEBUG: false,
       ANIMATION_SPEED: 0,
       MIN_COL_WIDTH: 70,
       TABLE_DISPLAY_OPTIONS: [1000, 2000, 3000, 5000, 10000],
@@ -213,108 +213,108 @@
   const setupTablePaginationMemory = () => {
       const script = document.createElement('script');
       script.textContent = `
-(function() {
-    const logger = {
-        log: (message) => {
-            document.dispatchEvent(new CustomEvent('BOLCScript_log', { detail: message }));
-        },
-        error: (message) => {
-            document.dispatchEvent(new CustomEvent('BOLCScript_error', { detail: message }));
-        }
-    };
+        (function() {
+            const logger = {
+                log: (message) => {
+                    document.dispatchEvent(new CustomEvent('BOLCScript_log', { detail: message }));
+                },
+                error: (message) => {
+                    document.dispatchEvent(new CustomEvent('BOLCScript_error', { detail: message }));
+                }
+            };
 
-    logger.log('Script injected into main context');
+            logger.log('Script injected into main context');
 
-    const waitForDataTable = setInterval(() => {
-        if (typeof jQuery === 'undefined' || typeof jQuery.fn.DataTable === 'undefined') {
-            logger.log('Waiting for jQuery and DataTable...');
-            return;
-        }
+            const waitForDataTable = setInterval(() => {
+                if (typeof jQuery === 'undefined' || typeof jQuery.fn.DataTable === 'undefined') {
+                    logger.log('Waiting for jQuery and DataTable...');
+                    return;
+                }
 
-        const table = jQuery('.dataTable');
-        if (table.length === 0) {
-            logger.log('Waiting for DataTable to be present in DOM...');
-            return;
-        }
+                const table = jQuery('.dataTable');
+                if (table.length === 0) {
+                    logger.log('Waiting for DataTable to be present in DOM...');
+                    return;
+                }
 
-        try {
-            const dataTable = table.DataTable();
-            if (dataTable) {
-                logger.log('DataTable found and initialized');
-                clearInterval(waitForDataTable);
+                try {
+                    const dataTable = table.DataTable();
+                    if (dataTable) {
+                        logger.log('DataTable found and initialized');
+                        clearInterval(waitForDataTable);
 
-                const restorePage = () => {
-                    logger.log('Attempting to restore page from URL');
-                    const urlParams = new URLSearchParams(window.location.hash.slice(1));
-                    const pageFromUrl = urlParams.get('page');
+                        const restorePage = () => {
+                            logger.log('Attempting to restore page from URL');
+                            const urlParams = new URLSearchParams(window.location.hash.slice(1));
+                            const pageFromUrl = urlParams.get('page');
 
-                    if (pageFromUrl !== null) {
-                        logger.log('Found page in URL: ' + pageFromUrl);
-                        try {
-                            const pageNumber = parseInt(pageFromUrl) - 1; // Convert to 0-based index
-                            const pageInfo = dataTable.page.info();
+                            if (pageFromUrl !== null) {
+                                logger.log('Found page in URL: ' + pageFromUrl);
+                                try {
+                                    const pageNumber = parseInt(pageFromUrl) - 1; // Convert to 0-based index
+                                    const pageInfo = dataTable.page.info();
 
-                            logger.log('Current page info: ' + JSON.stringify(pageInfo));
+                                    logger.log('Current page info: ' + JSON.stringify(pageInfo));
 
-                            if (pageNumber >= 0 && pageNumber < pageInfo.pages) {
-                                logger.log('Setting page to: ' + (pageNumber + 1));
-                                dataTable.page(pageNumber).draw('page');
+                                    if (pageNumber >= 0 && pageNumber < pageInfo.pages) {
+                                        logger.log('Setting page to: ' + (pageNumber + 1));
+                                        dataTable.page(pageNumber).draw('page');
+                                    } else {
+                                        logger.error('Page number out of bounds: ' + pageNumber + ' (total pages: ' + pageInfo.pages + ')');
+                                    }
+                                } catch (error) {
+                                    logger.error('Error restoring page: ' + error.message);
+                                }
                             } else {
-                                logger.error('Page number out of bounds: ' + pageNumber + ' (total pages: ' + pageInfo.pages + ')');
+                                logger.log('No page found in URL');
                             }
-                        } catch (error) {
-                            logger.error('Error restoring page: ' + error.message);
-                        }
-                    } else {
-                        logger.log('No page found in URL');
+                        };
+
+                        // Handle page changes
+                        dataTable.on('page.dt', function() {
+                            const currentPage = dataTable.page() + 1; // Index starts at 1
+                            logger.log('Page changed to: ' + currentPage);
+
+                            const url = new URL(window.location);
+                            url.hash = 'page=' + currentPage;
+                            window.history.replaceState({}, '', url);
+                            logger.log('URL updated: ' + url.toString());
+                        });
+
+                        // Check if data is loaded by checking if we have valid page info
+                        const waitForData = setInterval(() => {
+                            const pageInfo = dataTable.page.info();
+                            if (pageInfo && pageInfo.pages > 0) {
+                                logger.log('Data loaded, pages available: ' + pageInfo.pages);
+                                clearInterval(waitForData);
+                                restorePage();
+                            } else {
+                                logger.log('Waiting for data to load...');
+                            }
+                        }, 100);
+
+                        window.addEventListener('hashchange', function() {
+                            logger.log('URL hash changed');
+                            const urlParams = new URLSearchParams(window.location.hash.slice(1));
+                            const pageFromUrl = urlParams.get('page');
+                            if (pageFromUrl !== null) {
+                                logger.log('Changing page from hash change: ' + pageFromUrl);
+                                try {
+                                    const pageNumber = parseInt(pageFromUrl) - 1; // Convert to 0-based index
+                                    dataTable.page(pageNumber).draw('page');
+                                } catch (error) {
+                                    logger.error('Error changing page from hash: ' + error.message);
+                                }
+                            }
+                        });
+
+                        logger.log('Page persistence initialization complete');
                     }
-                };
-
-                // Handle page changes
-                dataTable.on('page.dt', function() {
-                    const currentPage = dataTable.page() + 1; // Index starts at 1
-                    logger.log('Page changed to: ' + currentPage);
-
-                    const url = new URL(window.location);
-                    url.hash = 'page=' + currentPage;
-                    window.history.replaceState({}, '', url);
-                    logger.log('URL updated: ' + url.toString());
-                });
-
-                // Check if data is loaded by checking if we have valid page info
-                const waitForData = setInterval(() => {
-                    const pageInfo = dataTable.page.info();
-                    if (pageInfo && pageInfo.pages > 0) {
-                        logger.log('Data loaded, pages available: ' + pageInfo.pages);
-                        clearInterval(waitForData);
-                        restorePage();
-                    } else {
-                        logger.log('Waiting for data to load...');
-                    }
-                }, 100);
-
-                window.addEventListener('hashchange', function() {
-                    logger.log('URL hash changed');
-                    const urlParams = new URLSearchParams(window.location.hash.slice(1));
-                    const pageFromUrl = urlParams.get('page');
-                    if (pageFromUrl !== null) {
-                        logger.log('Changing page from hash change: ' + pageFromUrl);
-                        try {
-                            const pageNumber = parseInt(pageFromUrl) - 1; // Convert to 0-based index
-                            dataTable.page(pageNumber).draw('page');
-                        } catch (error) {
-                            logger.error('Error changing page from hash: ' + error.message);
-                        }
-                    }
-                });
-
-                logger.log('Page persistence initialization complete');
-            }
-        } catch (error) {
-            logger.error('Error accessing DataTable: ' + error.message);
-        }
-    }, 100);
-})();
+                } catch (error) {
+                    logger.error('Error accessing DataTable: ' + error.message);
+                }
+            }, 100);
+        })();
       `;
 
       document.head.appendChild(script);
