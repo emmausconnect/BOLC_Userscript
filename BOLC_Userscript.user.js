@@ -7,7 +7,7 @@
 // @downloadURL https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @updateURL   https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @grant       none
-// @version     1.2.0
+// @version     1.2.1
 // @author      Joffrey SCHROEDER / @Write on Github
 // @inject-into content
 // ==/UserScript==
@@ -21,7 +21,7 @@
    * */
 
   const CONFIG = {
-      DEBUG: false,
+      DEBUG: true,
       ANIMATION_SPEED: 0,
       MIN_COL_WIDTH: 70,
       TABLE_DISPLAY_OPTIONS: [1000, 2000, 3000, 5000, 10000],
@@ -35,8 +35,8 @@
           "/reconditionnement/list",
           //"/personne_morale/list",
           "/besoin_relais/list",
-          "/ticket_sav/list",
-          "/log_import/list"
+          "/ticket_sav/list"
+          //"/log_import/list"
       ]
   };
 
@@ -152,19 +152,12 @@
                 const interval = setInterval(() => {
                     if (window.jQuery && window.jQuery.AdminLTE) {
                         clearInterval(interval);
-
-                        // Configure animations
                         $.AdminLTE.options.animationSpeed = animationSpeed;
-
-                        // Initialize the sidebar tree
+                        $.AdminLTE.boxWidget.animationSpeed = 0;
                         $.AdminLTE.tree('.sidebar');
-
-                        // Activate all box widgets
                         $('.box').each(function () {
                             $.AdminLTE.boxWidget.activate(this);
                         });
-
-                        // Activate global box widget
                         $.AdminLTE.boxWidget.activate();
                     }
                 }, 50); // Check every 50ms if jQuery is loaded
@@ -184,6 +177,8 @@
           });
       });
 
+      applyGlobalStyle();
+
       // Apply styles for specific paths
       if (CONFIG.PATHS_WITH_TABLEAU.some(path => utils.currentPagepath.startsWith(path))) {
           applyTableauStyles();
@@ -192,8 +187,6 @@
       } else {
           applyStyleIfNoTable();
       }
-
-      applyGlobalStyle();
 
   };
 
@@ -220,98 +213,108 @@
   const setupTablePaginationMemory = () => {
       const script = document.createElement('script');
       script.textContent = `
-      (function() {
-          const logger = {
-              log: (message) => {
-                  document.dispatchEvent(new CustomEvent('BOLCScript_log', { detail: message }));
-              },
-              error: (message) => {
-                  document.dispatchEvent(new CustomEvent('BOLCScript_error', { detail: message }));
-              }
-          };
+(function() {
+    const logger = {
+        log: (message) => {
+            document.dispatchEvent(new CustomEvent('BOLCScript_log', { detail: message }));
+        },
+        error: (message) => {
+            document.dispatchEvent(new CustomEvent('BOLCScript_error', { detail: message }));
+        }
+    };
 
-          logger.log('Script injected into main context');
+    logger.log('Script injected into main context');
 
-          const waitForDataTable = setInterval(() => {
-              if (typeof jQuery === 'undefined' || typeof jQuery.fn.DataTable === 'undefined') {
-                  logger.log('Waiting for jQuery and DataTable...');
-                  return;
-              }
+    const waitForDataTable = setInterval(() => {
+        if (typeof jQuery === 'undefined' || typeof jQuery.fn.DataTable === 'undefined') {
+            logger.log('Waiting for jQuery and DataTable...');
+            return;
+        }
 
-              const table = jQuery('.dataTable');
-              if (table.length === 0) {
-                  logger.log('Waiting for DataTable to be present in DOM...');
-                  return;
-              }
+        const table = jQuery('.dataTable');
+        if (table.length === 0) {
+            logger.log('Waiting for DataTable to be present in DOM...');
+            return;
+        }
 
-              try {
-                  const dataTable = table.DataTable();
-                  if (dataTable) {
-                      logger.log('DataTable found and initialized');
-                      clearInterval(waitForDataTable);
+        try {
+            const dataTable = table.DataTable();
+            if (dataTable) {
+                logger.log('DataTable found and initialized');
+                clearInterval(waitForDataTable);
 
-                      dataTable.on('page.dt', function() {
-                          const currentPage = dataTable.page() + 1; // Index starts at 1
-                          logger.log('Page changed to: ' + currentPage);
+                const restorePage = () => {
+                    logger.log('Attempting to restore page from URL');
+                    const urlParams = new URLSearchParams(window.location.hash.slice(1));
+                    const pageFromUrl = urlParams.get('page');
 
-                          const url = new URL(window.location);
-                          url.hash = 'page=' + currentPage;
-                          window.history.replaceState({}, '', url);
-                          logger.log('URL updated: ' + url.toString());
-                      });
+                    if (pageFromUrl !== null) {
+                        logger.log('Found page in URL: ' + pageFromUrl);
+                        try {
+                            const pageNumber = parseInt(pageFromUrl) - 1; // Convert to 0-based index
+                            const pageInfo = dataTable.page.info();
 
-                      const restorePage = () => {
-                          logger.log('Attempting to restore page from URL');
-                          const urlParams = new URLSearchParams(window.location.hash.slice(1));
-                          const pageFromUrl = urlParams.get('page');
+                            logger.log('Current page info: ' + JSON.stringify(pageInfo));
 
-                          if (pageFromUrl !== null) {
-                              logger.log('Found page in URL: ' + pageFromUrl);
-                              try {
-                                  const pageNumber = parseInt(pageFromUrl) - 1; // Convert to 0-based index
-                                  const pageInfo = dataTable.page.info();
+                            if (pageNumber >= 0 && pageNumber < pageInfo.pages) {
+                                logger.log('Setting page to: ' + (pageNumber + 1));
+                                dataTable.page(pageNumber).draw('page');
+                            } else {
+                                logger.error('Page number out of bounds: ' + pageNumber + ' (total pages: ' + pageInfo.pages + ')');
+                            }
+                        } catch (error) {
+                            logger.error('Error restoring page: ' + error.message);
+                        }
+                    } else {
+                        logger.log('No page found in URL');
+                    }
+                };
 
-                                  logger.log('Current page info: ' + JSON.stringify(pageInfo));
+                // Handle page changes
+                dataTable.on('page.dt', function() {
+                    const currentPage = dataTable.page() + 1; // Index starts at 1
+                    logger.log('Page changed to: ' + currentPage);
 
-                                  if (pageNumber >= 0 && pageNumber < pageInfo.pages) {
-                                      logger.log('Setting page to: ' + (pageNumber + 1));
-                                      dataTable.page(pageNumber).draw('page');
-                                  } else {
-                                      logger.error('Page number out of bounds: ' + pageNumber + ' (total pages: ' + pageInfo.pages + ')');
-                                  }
-                              } catch (error) {
-                                  logger.error('Error restoring page: ' + error.message);
-                              }
-                          } else {
-                              logger.log('No page found in URL');
-                          }
-                      };
+                    const url = new URL(window.location);
+                    url.hash = 'page=' + currentPage;
+                    window.history.replaceState({}, '', url);
+                    logger.log('URL updated: ' + url.toString());
+                });
 
-                      logger.log('Setting up delayed page restoration');
-                      setTimeout(restorePage, 100);
+                // Check if data is loaded by checking if we have valid page info
+                const waitForData = setInterval(() => {
+                    const pageInfo = dataTable.page.info();
+                    if (pageInfo && pageInfo.pages > 0) {
+                        logger.log('Data loaded, pages available: ' + pageInfo.pages);
+                        clearInterval(waitForData);
+                        restorePage();
+                    } else {
+                        logger.log('Waiting for data to load...');
+                    }
+                }, 100);
 
-                      window.addEventListener('hashchange', function() {
-                          logger.log('URL hash changed');
-                          const urlParams = new URLSearchParams(window.location.hash.slice(1));
-                          const pageFromUrl = urlParams.get('page');
-                          if (pageFromUrl !== null) {
-                              logger.log('Changing page from hash change: ' + pageFromUrl);
-                              try {
-                                  const pageNumber = parseInt(pageFromUrl) - 1; // Convert to 0-based index
-                                  dataTable.page(pageNumber).draw('page');
-                              } catch (error) {
-                                  logger.error('Error changing page from hash: ' + error.message);
-                              }
-                          }
-                      });
+                window.addEventListener('hashchange', function() {
+                    logger.log('URL hash changed');
+                    const urlParams = new URLSearchParams(window.location.hash.slice(1));
+                    const pageFromUrl = urlParams.get('page');
+                    if (pageFromUrl !== null) {
+                        logger.log('Changing page from hash change: ' + pageFromUrl);
+                        try {
+                            const pageNumber = parseInt(pageFromUrl) - 1; // Convert to 0-based index
+                            dataTable.page(pageNumber).draw('page');
+                        } catch (error) {
+                            logger.error('Error changing page from hash: ' + error.message);
+                        }
+                    }
+                });
 
-                      logger.log('Page persistence initialization complete');
-                  }
-              } catch (error) {
-                  logger.error('Error accessing DataTable: ' + error.message);
-              }
-          }, 100);
-      })();
+                logger.log('Page persistence initialization complete');
+            }
+        } catch (error) {
+            logger.error('Error accessing DataTable: ' + error.message);
+        }
+    }, 100);
+})();
       `;
 
       document.head.appendChild(script);
@@ -688,6 +691,15 @@
 
   const applyStyleIfNoTable = () => {
       const ifNoTableStyle = `
+        .nav-tabs-custom > .nav-tabs > li.active > a, .nav-tabs-custom > .nav-tabs > li.active:hover > a {
+          background-color: #00c1b4;
+          color: #fff;
+        }
+        .nav-tabs-custom > .nav-tabs > li {
+          border-top: 0px solid transparent;
+          margin-bottom: 0px;
+          margin-right: 0px;
+        }
         .box {
           padding: 0.25rem;
         }
@@ -698,6 +710,10 @@
           background-color: #f2f7f8 !important;
           border-left: 0px;
           padding: 0px 10px;
+        }
+        .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+          padding: 0px;
+          padding-left: 5px;
         }
       `
 
@@ -829,6 +845,15 @@
 
   const applyGlobalStyle = () => {
       const globalStyle = `
+      .dt-buttons .dt-button {
+        background: #04b8c4;
+      }
+      .btn-primary, .btn-primary.disabled,
+      .btn-info, .btn-info.disabled
+      {
+        background: #04b8c4;
+        border: 1px solid #009efb;
+      }
       h3, .h3 {
         font-size: 20px;
       }
@@ -845,7 +870,7 @@
         padding: 4px 7px;
       }
       .sidebar-menu > li > a {
-        padding: 10px 5px 10px 5px;
+        padding: 5px 5px 5px 5px;
       }
       .sidebar-mini.sidebar-collapse .sidebar-menu > li > a {
         padding: 10px 5px 10px 11px;
@@ -941,7 +966,7 @@
         padding-left: 0px;
       }
       .sidebar-menu .treeview-menu > li > a {
-        padding: 5px 0px 5px 10px;
+        padding: 3px 0px 3px 10px;
         display: block;
         font-size: 13px;
       }
@@ -994,8 +1019,8 @@
         padding: 2px 10px 0px 10px;
       }
       .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
-        padding: 3px;
-        padding-bottom: 0;
+        padding: 0px;
+        padding-left: 5px;
       }
       .main-sidebar, .left-side {
         padding-top: 0px;
