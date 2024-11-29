@@ -7,7 +7,7 @@
 // @downloadURL https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @updateURL   https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @grant       none
-// @version     1.2.1
+// @version     1.2.2
 // @author      Joffrey SCHROEDER / @Write on Github
 // @inject-into content
 // ==/UserScript==
@@ -836,7 +836,6 @@
         }
         td span.badge {
           margin: 0px;
-          display: block;
           padding: 2px 0px;
         }
         td span.badge {
@@ -890,8 +889,31 @@
       .select2-results__option {
         padding: 0px 10px;
       }
+      .badge[style*="background: #8cff00"] {
+          background: #79b72d;
+      }
       .badge[style*="background: #f6f5f4"] {
           background: #535353;
+      }
+      .badge[style*="background: #4dff00"] {
+          background: #329d04;
+      }
+      .badge[style*="background: #ff0000"] {
+          background: #ea0909;
+      }
+      .badge[style*="background: #babdb6"] {
+          background: #757574;
+      }
+      .badge[style*="background: #a6a6a6"] {
+          background: #757574;
+      }
+      .badge[style*="background: #edd400"] {
+          background: #bfac0b;
+      }
+      .badge[style*="background: #ffdd00"],
+      .badge[style*="background: #c4a000"] {
+          background: #ffdd01;
+          color: #ae0000;
       }
       .btn {
         border-color: #7b7b7b75;
