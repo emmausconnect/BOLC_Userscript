@@ -910,6 +910,9 @@
       .badge[style*="background: #edd400"] {
           background: #bfac0b;
       }
+      .badge[style*="background: #eeff00"] {
+          background: #b5c206;
+      }
       .badge[style*="background: #ffdd00"],
       .badge[style*="background: #c4a000"] {
           background: #ffdd01;
