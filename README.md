@@ -35,6 +35,7 @@ Puis [Cliquer-ici](https://raw.githubusercontent.com/emmausconnect/BOLC_Userscri
 - Réduire la hauteur du bandeau supérieur afin de minimiser l’espace occupé.
 - Améliorer le contraste des menus de la barre latérale lors du survol, lorsqu’elle est repliée.
 - Éliminer tous les délais liés aux animations.
+- Amélioration du contraste des badges qui étaient difficilement lisible. 
 
 # Bugs connus
   - Réajuster la largeur d'une colonne en bas du tableau provoque un déplacement latéral de la vue vers la gauche.  
