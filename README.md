@@ -46,6 +46,11 @@ Puis [Cliquer-ici](https://raw.githubusercontent.com/emmausconnect/BOLC_Userscri
 
 # Aperçu
 
+Accueil 
+
+![shot on 2024-December-02@10h22(17)](https://github.com/user-attachments/assets/583c6016-2e47-4b7e-a917-86d87ebc1049)
+
+
 Video de la pagination flottante
 
 _Toujours disponible et visible, elle peut être déplacée momentanément en cas de gêne._
