@@ -39,7 +39,7 @@ Puis [Cliquer-ici](https://raw.githubusercontent.com/emmausconnect/BOLC_Userscri
 
 # Bugs connus
   - Réajuster la largeur d'une colonne en bas du tableau provoque un déplacement latéral de la vue vers la gauche.  
-  - (Bug de Newmips) Le bouton "Suivant" devient inopérant à partir de la seconde page.
+  - ~~(Bug de Newmips) Le bouton "Suivant" devient inopérant à partir de la seconde page.~~ (Corrigé - 1.2.3)
   - ~~Si l'en-tête du tableau n'est pas visible (par exemple, en bas de page), le changement de page via la pagination réinitialise la largeur des colonnes. Elles deviennent alors non interactives (impossible de modifier l'ordre ou la largeur des colonnes). Un rechargement de la page est nécessaire. Ce bug sera corrigé dans les meilleurs délais.~~ (Correctif "temporaire" implémenté : défilement automatique vers le haut lors du changement de page)  
   - ~~Problème de condition de concurrence avec le chargement de la pagination dans le fragment URL.~~  (Corrigé - 1.2.1)
   - ~~Problème de contraste au survol des URL et des emails bleus.~~ (Corrigé)
@@ -67,6 +67,3 @@ Avant
 
 Après
 ![389043975-fc047b45-06c6-4080-ad70-e3a9506016af](https://github.com/user-attachments/assets/ddbcfd85-1dd1-4a21-86d8-e7f1ea2933b8)
-
-
-
