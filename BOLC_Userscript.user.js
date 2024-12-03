@@ -7,7 +7,7 @@
 // @downloadURL https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @updateURL   https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @grant       none
-// @version     1.2.2
+// @version     1.2.3
 // @author      Joffrey SCHROEDER / @Write on Github
 // @inject-into content
 // ==/UserScript==
@@ -590,14 +590,6 @@
                 });
             };
 
-            // Intercept pagination clicks
-            $(document).on('click', '.dataTables_paginate .paginate_button:not(.move_button)', function(e) {
-                // Only scroll if we're not already at the top
-                if (window.scrollY > 0) {
-                    scrollToTop();
-                }
-            });
-
             // Also handle length change dropdown if it exists
             $(document).on('change', '.dataTables_length select', function(e) {
                 if (window.scrollY > 0) {
@@ -653,6 +645,52 @@
                      });
                      dtable.on('draw', () => {
                          logger2.log('Table draw event');
+
+                        /******************************
+                         *
+                         * Corrige le bug newmips de page suivante / précedente
+                         * ne fonctionnant parfois pas.
+                         * On clone puis ré-attache un event custom a chaque draw.
+                         *
+                         **/
+                        var prev = document.querySelector('.paginate_button.previous');
+                        var next = document.querySelector('.paginate_button.next');
+
+                        // Clone and replace buttons to remove all attached events
+                        if (prev) prev.replaceWith(prev.cloneNode(true));
+                        if (next) next.replaceWith(next.cloneNode(true));
+
+                        // Get new references after replacement
+                        prev = document.querySelector('.paginate_button.previous');
+                        next = document.querySelector('.paginate_button.next');
+
+                        // Handle next button
+                        if (next) {
+                            next.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                var table = $('.dataTable').DataTable();
+                                var info = table.page.info();
+
+                                // Only move forward if not on last page
+                                if (info.page < info.pages - 1) {
+                                    table.page(info.page + 1).draw(false);
+                                }
+                            });
+                        }
+
+                        // Handle previous button
+                        if (prev) {
+                            prev.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                var table = $('.dataTable').DataTable();
+                                var info = table.page.info();
+                                if (info.page > 0) {
+                                    table.page(info.page - 1).draw(false);
+                                }
+                            });
+                        }
+                        /******************************/
+
                          setTimeout(() => {
                              expandHiddenText();
                              const columns = document.querySelectorAll('th');
@@ -703,6 +741,7 @@
         .nav-tabs-custom > .nav-tabs > li.active > a, .nav-tabs-custom > .nav-tabs > li.active:hover > a {
           background-color: #00c1b4;
           color: #fff;
+          border-radius: 6px 6px 0px 0px;
         }
         .nav-tabs-custom > .nav-tabs > li {
           border-top: 0px solid transparent;

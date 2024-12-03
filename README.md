@@ -30,12 +30,12 @@ Puis [Cliquer-ici](https://raw.githubusercontent.com/emmausconnect/BOLC_Userscri
   - ~~Réduit les éléments du header à 10 caractères, puis ajoute une ellipsis (…) pour optimiser la taille prise en hauteur.~~  
 
 ## Changements globaux
-- Optimiser la largeur de la barre latérale en la réduisant au strict minimum.
-- Diminuer la taille de la police de manière globale, y compris dans les tableaux, pour maximiser l’utilisation de l’espace.
-- Réduire la hauteur du bandeau supérieur afin de minimiser l’espace occupé.
-- Améliorer le contraste des menus de la barre latérale lors du survol, lorsqu’elle est repliée.
-- Éliminer tous les délais liés aux animations.
-- Amélioration du contraste des badges qui étaient difficilement lisible. 
+  - Optimiser la largeur de la barre latérale en la réduisant au strict minimum.
+  - Diminuer la taille de la police de manière globale, y compris dans les tableaux, pour maximiser l’utilisation de l’espace.
+  - Réduire la hauteur du bandeau supérieur afin de minimiser l’espace occupé.
+  - Améliorer le contraste des menus de la barre latérale lors du survol, lorsqu’elle est repliée.
+  - Éliminer tous les délais liés aux animations.
+  - Amélioration du contraste des badges qui étaient difficilement lisible. 
 
 # Bugs connus
   - Réajuster la largeur d'une colonne en bas du tableau provoque un déplacement latéral de la vue vers la gauche.  
