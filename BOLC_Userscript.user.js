@@ -141,7 +141,7 @@
 
       if (targetElement) {
           // Ajouter la version après le texte existant
-          targetElement.innerHTML += ` - BOLCScript v${scriptVersion}`;
+          targetElement.innerHTML += ` - <a class='script-link' href='https://github.com/emmausconnect/BOLC_Userscript' target='_blank'>BOLCScript v${scriptVersion}</a>`;
       }
 
       // Inject le code directement dans le contexte principale.
@@ -894,6 +894,14 @@
 
   const applyGlobalStyle = () => {
       const globalStyle = `
+      .script-link {
+        color: #fff;
+        text-decoration: underline;
+      }
+      .script-link:hover {
+        color: black;
+        text-decoration: none;
+      }
       .form-group {
         margin-bottom: 5px;
       }
