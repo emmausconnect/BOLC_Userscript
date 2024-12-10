@@ -778,6 +778,9 @@
 
   const applyTableauStyles = () => {
       const tableauStyle = `
+        .table-responsive {
+          overflow-y: visible;
+        }
         tr td a:hover {
             color: #fafafa;
         }
