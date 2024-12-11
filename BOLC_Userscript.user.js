@@ -7,7 +7,7 @@
 // @downloadURL https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @updateURL   https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @grant       none
-// @version     1.2.3
+// @version     1.2.4
 // @author      Joffrey SCHROEDER / @Write on Github
 // @inject-into content
 // ==/UserScript==
@@ -187,6 +187,7 @@
           applyTableauStyles();
           setupTableInteractions();
           setupTablePaginationMemory();
+          handleColumnSelector();
       } else {
           applyStyleIfNoTable();
       }
@@ -207,6 +208,7 @@
           setupDataTableOverflow();
           fixTableColumns();
           setupResetButtonHandler();
+          setupResetColumnsButtonHandler();
           duplicateUIBottomBtn();
       };
 
@@ -361,6 +363,108 @@
 
   };
 
+  const handleColumnSelector = () => {
+      const handleResetColumns = () => {
+          const tableId = document.querySelector('.dt-button.buttons-print').getAttribute('aria-controls');
+          const storageKey = 'newmips_shown_columns_save_' + tableId;
+          localStorage.removeItem(storageKey);
+          console.log('Reset filters for table:', storageKey);
+          window.location.reload();
+      };
+
+      const handleClickOutside = (event) => {
+          const columnSelector = document.querySelector('#columnSelector');
+          if (columnSelector && !columnSelector.contains(event.target)) {
+              // Make sure we're not clicking the toggle button itself
+              const targetButton = Array.from(document.querySelectorAll('.dt-button')).find(
+                  btn => btn.textContent.trim() === 'Choix Colonnes'
+              );
+              if (!targetButton.contains(event.target)) {
+                  columnSelector.style.display = 'none';
+                  document.body.setAttribute('data-table-shown', 'false');
+                  // Remove the event listener when we close the selector
+                  document.removeEventListener('mousedown', handleClickOutside);
+              }
+          }
+      };
+
+      const targetButton = Array.from(document.querySelectorAll('.dt-button')).find(
+          btn => btn.textContent.trim() === 'Choix Colonnes'
+      );
+
+      if (targetButton) {
+          targetButton.addEventListener('click', () => {
+              let columnSelector = document.querySelector('#columnSelector');
+              let body = document.querySelector('body');
+              if (columnSelector) {
+                  if (body.getAttribute('data-table-shown') == 'true') {
+                      columnSelector.style.display = 'none';
+                      body.setAttribute('data-table-shown', 'false');
+                      // Remove the event listener when we close the selector
+                      document.removeEventListener('mousedown', handleClickOutside);
+                  } else {
+                      body.setAttribute('data-table-shown', 'true');
+                      setTimeout(() => {
+                          columnSelector = document.querySelector('#columnSelector');
+                          var columnSelectorTitle = document.querySelector('#columnSelector h4');
+                          columnSelectorTitle.innerText = "";
+                          var columnSelectorApply = document.querySelector('#columnSelector button').parentElement;
+                          var columnSelectorReset = document.querySelector('#columnSelector button').parentElement.cloneNode(true);
+                          document.querySelector('#columnSelector').prepend(columnSelectorApply);
+                          columnSelectorApply.parentElement.prepend(columnSelectorReset);
+                          columnSelectorReset.firstChild.innerText = 'Remettre à zéro';
+                          columnSelectorReset.style.marginLeft = '30%';
+                          columnSelectorReset.firstChild.style.marginTop = '10px';
+                          columnSelectorReset.firstChild.classList.add('resetcolumns');
+                          columnSelectorReset.style.display = 'inline';
+                          columnSelectorApply.style.display = 'inline';
+                          columnSelectorApply.style.marginLeft = '10px';
+                          columnSelectorApply.firstChild.style.marginTop = '10px';
+                          columnSelectorReset.addEventListener('click', () => {
+                              handleResetColumns();
+                          });
+                          if (columnSelector) {
+                              document.body.appendChild(columnSelector);
+                              columnSelector.style.position = 'fixed';
+                              columnSelector.style.top = '50%';
+                              columnSelector.style.left = '50%';
+                              columnSelector.style.transform = 'translate(-50%, -50%)';
+                              columnSelector.style.zIndex = '9999';
+                              
+                              // Add the click outside listener after the selector is shown
+                              document.addEventListener('mousedown', handleClickOutside);
+                          }
+                      }, 1);
+                  }
+              }
+          });
+      }
+  };
+
+  /* TODO */
+  const setupResetColumnsButtonHandler = () => {
+      const script = document.createElement('script');
+      script.textContent = `
+
+          const handleResetColumns= () => {
+              // Clear the corresponding localStorage entry
+              const storageKey = 'newmips_shown_columns_save_' + tableId;
+              localStorage.removeItem(storageKey);
+              console.log('Reset filters for table:', tableId);
+          };
+
+          const resetcolumnsBtn = document.querySelector('.resetcolumns');
+              resetcolumnsBtn.addEventListener('click', () => {
+                  handleResetColumns();
+              });
+
+
+      `;
+
+      // Inject the script into the page
+      document.documentElement.appendChild(script);
+  };
+
   const setupResetButtonHandler = () => {
       const script = document.createElement('script');
       script.textContent = `
@@ -385,9 +489,6 @@
 
               // Clear all filter inputs
               clearAllFilters();
-
-              // Optional: Log the action
-              console.log('Reset filters for table:', tableId);
           };
 
           // Setup event delegation for the reset button
@@ -468,7 +569,6 @@
         const createClone2 = createButton2.cloneNode(true);
         buttonContainer.appendChild(createClone2);
       }
-
 
       // Insère le conteneur avant la cible
       targetElement.parentNode.insertBefore(buttonContainer, targetElement);
@@ -778,8 +878,28 @@
 
   const applyTableauStyles = () => {
       const tableauStyle = `
-        .table-responsive {
-          overflow-y: visible;
+        .hover:hover {
+          color: unset;
+          background-color: unset;
+        }
+        #columnSelector div {
+          border-bottom: 1px solid #cccccc63;
+          padding-top: 1px;
+          padding-bottom: 1px;
+        }
+        #columnSelector label {
+          padding-left: 10px;
+          padding-right: 10px;
+        }
+        #columnSelector label:hover {
+          font-weight: bold;
+          cursor: pointer;
+        }
+        #columnSelector div:hover .icheck-item {
+          filter: hue-rotate(100deg);
+        }
+        body .table-responsive {
+
         }
         tr td a:hover {
             color: #fafafa;
@@ -910,14 +1030,14 @@
       }
       #columnSelector {
         height: unset;
-        width: 100%;
+        width: 35%;
+        height: 100vh;
         overflow: auto;
         position: absolute;
         background: #ffffffed;
         border: 1px solid grey;
-        border-radius: 5px;
+        border-radius: 0px;
         padding: 0px;
-        padding-left: 10px;
       }
       #columnSelector label {
         display: inline-block;
@@ -938,6 +1058,9 @@
       }
       .select2-results__option {
         padding: 0px 10px;
+      }
+      .badge[style*="background: #fff700"] {
+          background: #b3ae00;
       }
       .badge[style*="background: #8cff00"] {
           background: #79b72d;
