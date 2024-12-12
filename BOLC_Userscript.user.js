@@ -7,7 +7,7 @@
 // @downloadURL https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @updateURL   https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @grant       none
-// @version     1.3.0
+// @version     1.3.1
 // @author      Joffrey SCHROEDER / @Write on Github
 // @inject-into content
 // ==/UserScript==
@@ -196,6 +196,7 @@
           applyTableauStyles();
           setupDataTableOverflow();
           setupTablePaginationMemory();
+          handleColumnSelector();
       }
 
   };
@@ -430,7 +431,7 @@
                               columnSelector.style.left = '50%';
                               columnSelector.style.transform = 'translate(-50%, -50%)';
                               columnSelector.style.zIndex = '9999';
-                              
+
                               // Add the click outside listener after the selector is shown
                               document.addEventListener('mousedown', handleClickOutside);
                           }
