@@ -10,6 +10,11 @@ Pour Chrome : [Violentmonkey](https://chromewebstore.google.com/detail/violentmo
 
 Puis [Cliquer-ici](https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js) pour installer l'userscript. 
 
+# Changlog 
+
+### 1.3.1
+
+- Amélioration de la sélection des colonnes pour qu'elles prennent toute la hauteur de l'écran. Ajout d'un effet au survol pour une meilleure lisibilité.
 
 # Fonctionnalités de ce script 
 
