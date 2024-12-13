@@ -10,15 +10,15 @@ Pour Chrome : [Violentmonkey](https://chromewebstore.google.com/detail/violentmo
 
 Puis [Cliquer-ici](https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js) pour installer l'userscript. 
 
-# Changlog 
+# Changelog 
 
 ### 1.3.1
 
-- Amélioration de la sélection des colonnes pour qu'elles prennent toute la hauteur de l'écran. Ajout d'un effet au survol pour une meilleure lisibilité.
+- Amélioration de la sélection des colonnes (bouton Choix Colonnes dans les tableaux), pour qu'elles prennent toute la hauteur de l'écran. Ajout d'un effet au survol pour une meilleure lisibilité.
 
 # Fonctionnalités de ce script 
 
-## Tableau
+## Tableaux
   - Copie les boutons "Retour" / "Créer" depuis le bas de page vers le haut de la page, quand l'un et/ou l'autre sont dispo.
   - Les textes des cellules sont désormais affichés intégralement sans être tronqués ni remplacés par des points de suspension (exemple : Adresse, Action à effectuer, etc.).
   - Pagination flottante permettant un changement de page simplifié.
