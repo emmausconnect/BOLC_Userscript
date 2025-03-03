@@ -7,12 +7,12 @@
 // @downloadURL https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @updateURL   https://raw.githubusercontent.com/emmausconnect/BOLC_Userscript/refs/heads/main/BOLC_Userscript.user.js
 // @grant       none
-// @version     1.3.1
+// @version     1.4.0
 // @author      Joffrey SCHROEDER / @Write on Github
 // @inject-into content
 // ==/UserScript==
 
-(function() {
+(function () {
   'use strict';
 
   /* ----------------
@@ -21,26 +21,26 @@
    * */
 
   const CONFIG = {
-      DEBUG: false,
-      ANIMATION_SPEED: 0,
-      MIN_COL_WIDTH: 70,
-      TABLE_DISPLAY_OPTIONS: [1000, 2000, 3000, 5000, 10000],
-      PATHS_WITH_TABLEAU: [
-          "/materiel_disponible/list",
-          "/materiel_pa/list",
-          "/contact/list",
-          "/don/list",
-          "/donateur/list",
-          "/relais/list",
-          "/reconditionnement/list",
-          //"/personne_morale/list",
-          "/besoin_relais/list",
-          "/ticket_sav/list"
-          //"/log_import/list"
-      ],
-      PATHS_WITH_TABLEAU_PAGINATION_ONLY: [
-        "/log_import/list"
-      ]
+    DEBUG: true,
+    ANIMATION_SPEED: 0,
+    MIN_COL_WIDTH: 70,
+    TABLE_DISPLAY_OPTIONS: [1000, 2000, 3000, 5000, 10000],
+    PATHS_WITH_TABLEAU: [
+      "/materiel_disponible/list",
+      "/materiel_pa/list",
+      "/contact/list",
+      "/don/list",
+      "/donateur/list",
+      "/relais/list",
+      "/reconditionnement/list",
+      //"/personne_morale/list",
+      "/besoin_relais/list",
+      "/ticket_sav/list"
+      //"/log_import/list"
+    ],
+    PATHS_WITH_TABLEAU_PAGINATION_ONLY: [
+      "/log_import/list"
+    ]
   };
 
   /* ----------------
@@ -49,67 +49,67 @@
    * */
 
   const logger = {
-      log: (str) => {
-          if (CONFIG.DEBUG) {
-              const scriptVersion = GM_info.script.version;
-              const style = 'background: #0066ff; color: white; padding: 2px 5px; border-radius: 3px;';
-              console.log(`📜 %c[BOLCScript]%c (${scriptVersion}) : ${str}`, style, '');
-          }
-      },
-      error: (str) => {
-          const scriptVersion = GM_info.script.version;
-          const style = 'background: #ff0000; color: white; padding: 2px 5px; border-radius: 3px;';
-          console.error(`📜 %c[BOLCScript]%c (${scriptVersion}) ERROR: ${str}`, style, '');
+    log: (str) => {
+      if (CONFIG.DEBUG) {
+        const scriptVersion = GM_info.script.version;
+        const style = 'background: #0066ff; color: white; padding: 2px 5px; border-radius: 3px;';
+        console.log(`📜 %c[BOLCScript]%c (${scriptVersion}) : ${str}`, style, '');
       }
+    },
+    error: (str) => {
+      const scriptVersion = GM_info.script.version;
+      const style = 'background: #ff0000; color: white; padding: 2px 5px; border-radius: 3px;';
+      console.error(`📜 %c[BOLCScript]%c (${scriptVersion}) ERROR: ${str}`, style, '');
+    }
   };
 
   const utils = {
-      isDark: window.matchMedia?.("(prefers-color-scheme: dark)").matches,
-      platform: window.navigator.platform,
-      currentPagepath: window.location.pathname,
-      currentUrl: window.location.href,
-      theme: window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light",
+    isDark: window.matchMedia?.("(prefers-color-scheme: dark)").matches,
+    platform: window.navigator.platform,
+    currentPagepath: window.location.pathname,
+    currentUrl: window.location.href,
+    theme: window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light",
 
-      match: (str, rule) => {
-          const escapeRegex = (s) => s.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-          return new RegExp("^" + rule.split("*").map(escapeRegex).join(".*") + "$").test(str);
-      },
+    match: (str, rule) => {
+      const escapeRegex = (s) => s.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+      return new RegExp("^" + rule.split("*").map(escapeRegex).join(".*") + "$").test(str);
+    },
 
-      addScript: (text) => {
-          const newScript = document.createElement('script');
-          newScript.type = "application/javascript";
-          newScript.textContent = text;
-          document.head.appendChild(newScript);
-      },
+    addScript: (text) => {
+      const newScript = document.createElement('script');
+      newScript.type = "application/javascript";
+      newScript.textContent = text;
+      document.head.appendChild(newScript);
+    },
 
-      paste: (str) => {
-          const node = document.createElement('style');
-          node.type = 'text/css';
-          node.appendChild(document.createTextNode(str.replace(/;/g, ' !important;')));
-          (document.head || document.documentElement).appendChild(node);
-      },
+    paste: (str) => {
+      const node = document.createElement('style');
+      node.type = 'text/css';
+      node.appendChild(document.createTextNode(str.replace(/;/g, ' !important;')));
+      (document.head || document.documentElement).appendChild(node);
+    },
 
-      checkElement: async (selector) => {
-          while (document.querySelector(selector) === null) {
-              await new Promise(resolve => requestAnimationFrame(resolve));
-          }
-          return document.querySelector(selector);
-      },
-
-      removeGarbage: (arr) => {
-          arr.forEach(e => {
-              utils.checkElement(e).then((selector) => {
-                  logger.log(`Deleting element -- ${e}`);
-                  selector.remove();
-              });
-          });
-      },
-
-      clearEventListener: (element) => {
-          const clonedElement = element.cloneNode(true);
-          element.replaceWith(clonedElement);
-          return clonedElement;
+    checkElement: async (selector) => {
+      while (document.querySelector(selector) === null) {
+        await new Promise(resolve => requestAnimationFrame(resolve));
       }
+      return document.querySelector(selector);
+    },
+
+    removeGarbage: (arr) => {
+      arr.forEach(e => {
+        utils.checkElement(e).then((selector) => {
+          logger.log(`Deleting element -- ${e}`);
+          selector.remove();
+        });
+      });
+    },
+
+    clearEventListener: (element) => {
+      const clonedElement = element.cloneNode(true);
+      element.replaceWith(clonedElement);
+      return clonedElement;
+    }
   };
 
   /* ----------------
@@ -119,37 +119,37 @@
 
   const init = () => {
 
-      // Écouter les événements de log depuis le contexte principal
-      document.addEventListener('BOLCScript_log', function(e) {
-          logger.log(e.detail);
-      });
+    // Écouter les événements de log depuis le contexte principal
+    document.addEventListener('BOLCScript_log', function (e) {
+      logger.log(e.detail);
+    });
 
-      document.addEventListener('BOLCScript_error', function(e) {
-          logger.error(e.detail);
-      });
+    document.addEventListener('BOLCScript_error', function (e) {
+      logger.error(e.detail);
+    });
 
-      // Log load context
-      if (window.top === window.self) {
-          logger.log(`(main) Loaded on: ${utils.currentUrl}`);
-      } else {
-          logger.log(`(iframe) Loaded on: ${utils.currentUrl}`);
-      }
+    // Log load context
+    if (window.top === window.self) {
+      logger.log(`(main) Loaded on: ${utils.currentUrl}`);
+    } else {
+      logger.log(`(iframe) Loaded on: ${utils.currentUrl}`);
+    }
 
-      // Append la version du script à côté de la version du BOLC
-      const scriptVersion = GM_info.script.version;
-      const targetElement = document.querySelector('li[style*="padding: 20px 18px 0 18px !important;"] > div');
+    // Append la version du script à côté de la version du BOLC
+    const scriptVersion = GM_info.script.version;
+    const targetElement = document.querySelector('li[style*="padding: 20px 18px 0 18px !important;"] > div');
 
-      if (targetElement) {
-          // Ajouter la version après le texte existant
-          targetElement.innerHTML += ` - <a class='script-link' href='https://github.com/emmausconnect/BOLC_Userscript' target='_blank'>BOLCScript v${scriptVersion}</a>`;
-      }
+    if (targetElement) {
+      // Ajouter la version après le texte existant
+      targetElement.innerHTML += ` - <a class='script-link' href='https://github.com/emmausconnect/BOLC_Userscript' target='_blank'>BOLCScript v${scriptVersion}</a>`;
+    }
 
-      // Inject le code directement dans le contexte principale.
-      // Obligatoire car nous utilisons @inject-into content
-      // Pour la compatibilité avec Safari.
-      (function() {
-          const script = document.createElement('script');
-          script.textContent = `
+    // Inject le code directement dans le contexte principale.
+    // Obligatoire car nous utilisons @inject-into content
+    // Pour la compatibilité avec Safari.
+    (function () {
+      const script = document.createElement('script');
+      script.textContent = `
             (function() {
                 const animationSpeed = ${CONFIG.ANIMATION_SPEED};
                 const interval = setInterval(() => {
@@ -166,65 +166,65 @@
                 }, 50); // Check every 50ms if jQuery is loaded
             })();
         `;
-          document.documentElement.appendChild(script);
-          script.remove();
-      })();
+      document.documentElement.appendChild(script);
+      script.remove();
+    })();
 
-      // Extend table display options
-      utils.checkElement('select[name]').then((selector) => {
-          CONFIG.TABLE_DISPLAY_OPTIONS.forEach(value => {
-              const option = document.createElement('option');
-              option.value = value;
-              option.textContent = value;
-              selector.appendChild(option);
-          });
+    // Extend table display options
+    utils.checkElement('select[name*=_length').then((selector) => {
+      CONFIG.TABLE_DISPLAY_OPTIONS.forEach(value => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = value;
+        selector.appendChild(option);
       });
+    });
 
-      applyGlobalStyle();
+    applyGlobalStyle();
 
-      // Apply styles for specific paths
-      if (CONFIG.PATHS_WITH_TABLEAU.some(path => utils.currentPagepath.startsWith(path))) {
-          applyTableauStyles();
-          setupTableInteractions();
-          setupTablePaginationMemory();
-          handleColumnSelector();
-      } else {
-          applyStyleIfNoTable();
-      }
+    // Apply styles for specific paths
+    if (CONFIG.PATHS_WITH_TABLEAU.some(path => utils.currentPagepath.startsWith(path))) {
+      applyTableauStyles();
+      setupTableInteractions();
+      setupTablePaginationMemory();
+    } else {
+      applyStyleIfNoTable();
+    }
 
-      if (CONFIG.PATHS_WITH_TABLEAU_PAGINATION_ONLY.some(path => utils.currentPagepath.startsWith(path))) {
-          applyTableauStyles();
-          setupDataTableOverflow();
-          setupTablePaginationMemory();
-          handleColumnSelector();
-      }
+    if (CONFIG.PATHS_WITH_TABLEAU_PAGINATION_ONLY.some(path => utils.currentPagepath.startsWith(path))) {
+      applyTableauStyles();
+      setupDataTableOverflow();
+      setupTablePaginationMemory();
+    }
+
+    initializeColumnSelectorOnUrlChange();
 
   };
 
   const setupTableInteractions = () => {
-      const initialize = () => {
-          disableScrollEvents();
-          disableFixedHeader();
-          setupTableResizing();
-          setupDataTableOverflow();
-          fixTableColumns();
-          setupResetButtonHandler();
-          setupResetColumnsButtonHandler();
-          duplicateUIBottomBtn();
-      };
+    const initialize = () => {
+      disableScrollEvents();
+      disableFixedHeader();
+      setupTableResizing();
+      setupDataTableOverflow();
+      fixTableColumns();
+      setupResetButtonHandler();
+      setupResetColumnsButtonHandler();
+      duplicateUIBottomBtn();
+    };
 
-      if (document.readyState === "loading") {
-          // Le document n'est pas encore prêt, on attend l'événement DOMContentLoaded
-          document.addEventListener('DOMContentLoaded', initialize);
-      } else {
-          // Le document est déjà prêt, on initialise directement
-          initialize();
-      }
+    if (document.readyState === "loading") {
+      // Le document n'est pas encore prêt, on attend l'événement DOMContentLoaded
+      document.addEventListener('DOMContentLoaded', initialize);
+    } else {
+      // Le document est déjà prêt, on initialise directement
+      initialize();
+    }
   };
 
   const setupTablePaginationMemory = () => {
-      const script = document.createElement('script');
-      script.textContent = `
+    const script = document.createElement('script');
+    script.textContent = `
         (function() {
             const logger = {
                 log: (message) => {
@@ -329,123 +329,191 @@
         })();
       `;
 
-      document.head.appendChild(script);
+    document.head.appendChild(script);
   };
 
   const fixTableColumns = () => {
-      utils.checkElement('.dataTable').then((dataTable) => {
-          logger.log('Fixing table column widths');
-          const lastThreeHeaders = dataTable.querySelectorAll('th:nth-last-child(-n+3)');
-          lastThreeHeaders.forEach(th => {
-              th.style.width = '90px';
-          });
+    utils.checkElement('.dataTable').then((dataTable) => {
+      logger.log('Fixing table column widths');
+      const lastThreeHeaders = dataTable.querySelectorAll('th:nth-last-child(-n+3)');
+      lastThreeHeaders.forEach(th => {
+        th.style.width = '90px';
       });
+    });
   };
 
   const disableScrollEvents = () => {
-      document.addEventListener('scroll', (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-      });
+    document.addEventListener('scroll', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    });
   };
 
   const disableFixedHeader = () => {
-      const table = document.querySelector('#table_id');
+    const table = document.querySelector('#table_id');
 
-      if (table) {
-          table.addEventListener('page.dt', () => {
-              document.querySelectorAll('.fixedHeader-floating').forEach(el => el.remove());
-          });
+    if (table) {
+      table.addEventListener('page.dt', () => {
+        document.querySelectorAll('.fixedHeader-floating').forEach(el => el.remove());
+      });
 
-          table.addEventListener('draw.dt', () => {
-              document.querySelectorAll('.fixedHeader-floating').forEach(el => el.remove());
-          });
-      }
+      table.addEventListener('draw.dt', () => {
+        document.querySelectorAll('.fixedHeader-floating').forEach(el => el.remove());
+      });
+    }
 
   };
 
-  const handleColumnSelector = () => {
-      const handleResetColumns = () => {
-          const tableId = document.querySelector('.dt-button.buttons-print').getAttribute('aria-controls');
-          const storageKey = 'newmips_shown_columns_save_' + tableId;
-          localStorage.removeItem(storageKey);
-          console.log('Reset filters for table:', storageKey);
-          window.location.reload();
-      };
+  const initializeColumnSelectorOnUrlChange = () => {
+    // 1. Listen for popstate events (back/forward navigation)
+    window.addEventListener('popstate', () => {
+      console.log("URL changed (popstate event)");
+      setTimeout(initializeColumnSelector(), 500);
+    });
 
-      const handleClickOutside = (event) => {
-          const columnSelector = document.querySelector('#columnSelector');
-          if (columnSelector && !columnSelector.contains(event.target)) {
-              // Make sure we're not clicking the toggle button itself
-              const targetButton = Array.from(document.querySelectorAll('.dt-button')).find(
-                  btn => btn.textContent.trim() === 'Choix Colonnes'
-              );
-              if (!targetButton.contains(event.target)) {
-                  columnSelector.style.display = 'none';
-                  document.body.setAttribute('data-table-shown', 'false');
-                  // Remove the event listener when we close the selector
-                  document.removeEventListener('mousedown', handleClickOutside);
-              }
-          }
-      };
+    // 2. Listen for hashchange events (fragment/hash changes)
+    window.addEventListener('hashchange', () => {
+      console.log("URL fragment changed (hashchange event)");
+      setTimeout(initializeColumnSelector(), 500);
+    });
 
+    initializeColumnSelector();
+  };
+
+  const initializeColumnSelector = () => {
+    console.log("Initializing column selector...");
+
+    // Clear any existing polling to avoid duplicates
+    if (window.columnSelectorPoller) {
+      clearInterval(window.columnSelectorPoller);
+    }
+
+    // Variables to control polling
+    const maxAttempts = 50; // Maximum 50 attempts
+    const pollingInterval = 50; // Poll every 50ms
+    let attempts = 0;
+
+    // Start polling for the button
+    window.columnSelectorPoller = setInterval(() => {
       const targetButton = Array.from(document.querySelectorAll('.dt-button')).find(
-          btn => btn.textContent.trim() === 'Choix Colonnes'
+        btn => btn.textContent.trim() === 'Choix Colonnes'
       );
 
-      if (targetButton) {
-          targetButton.addEventListener('click', () => {
-              let columnSelector = document.querySelector('#columnSelector');
-              let body = document.querySelector('body');
-              if (columnSelector) {
-                  if (body.getAttribute('data-table-shown') == 'true') {
-                      columnSelector.style.display = 'none';
-                      body.setAttribute('data-table-shown', 'false');
-                      // Remove the event listener when we close the selector
-                      document.removeEventListener('mousedown', handleClickOutside);
-                  } else {
-                      body.setAttribute('data-table-shown', 'true');
-                      setTimeout(() => {
-                          columnSelector = document.querySelector('#columnSelector');
-                          var columnSelectorTitle = document.querySelector('#columnSelector h4');
-                          columnSelectorTitle.innerText = "";
-                          var columnSelectorApply = document.querySelector('#columnSelector button').parentElement;
-                          var columnSelectorReset = document.querySelector('#columnSelector button').parentElement.cloneNode(true);
-                          document.querySelector('#columnSelector').prepend(columnSelectorApply);
-                          columnSelectorApply.parentElement.prepend(columnSelectorReset);
-                          columnSelectorReset.firstChild.innerText = 'Remettre à zéro';
-                          columnSelectorReset.style.marginLeft = '30%';
-                          columnSelectorReset.firstChild.style.marginTop = '10px';
-                          columnSelectorReset.firstChild.classList.add('resetcolumns');
-                          columnSelectorReset.style.display = 'inline';
-                          columnSelectorApply.style.display = 'inline';
-                          columnSelectorApply.style.marginLeft = '10px';
-                          columnSelectorApply.firstChild.style.marginTop = '10px';
-                          columnSelectorReset.addEventListener('click', () => {
-                              handleResetColumns();
-                          });
-                          if (columnSelector) {
-                              document.body.appendChild(columnSelector);
-                              columnSelector.style.position = 'fixed';
-                              columnSelector.style.top = '50%';
-                              columnSelector.style.left = '50%';
-                              columnSelector.style.transform = 'translate(-50%, -50%)';
-                              columnSelector.style.zIndex = '9999';
+      attempts++;
 
-                              // Add the click outside listener after the selector is shown
-                              document.addEventListener('mousedown', handleClickOutside);
-                          }
-                      }, 1);
-                  }
-              }
-          });
+      if (targetButton) {
+        console.log("Column selector button found after", attempts, "attempts");
+        clearInterval(window.columnSelectorPoller);
+        handleColumnSelector();
+      } else if (attempts >= maxAttempts) {
+        console.log("Column selector button not found after maximum attempts");
+        clearInterval(window.columnSelectorPoller);
       }
+    }, pollingInterval);
+  };
+
+
+  const handleColumnSelector = () => {
+    logger.log("init handleColumnSelector");
+
+    const handleResetColumns = () => {
+      const tableId = document.querySelector('.dt-button.buttons-print').getAttribute('aria-controls');
+      const storageKey = 'newmips_shown_columns_save_' + tableId;
+      localStorage.removeItem(storageKey);
+      console.log('Reset filters for table:', storageKey);
+      window.location.reload();
+    };
+
+    const handleClickOutside = (event) => {
+      const columnSelector = document.querySelector('#columnSelector');
+      if (columnSelector && !columnSelector.contains(event.target)) {
+        // Make sure we're not clicking any of the toggle buttons
+        const targetButtons = Array.from(document.querySelectorAll('.dt-button')).filter(
+          btn => btn.textContent.trim() === 'Choix Colonnes'
+        );
+
+        const clickedOnButton = targetButtons.some(btn => btn.contains(event.target));
+
+        if (!clickedOnButton) {
+          columnSelector.style.display = 'none';
+          document.body.setAttribute('data-table-shown', 'false');
+          // Remove the event listener when we close the selector
+          document.removeEventListener('mousedown', handleClickOutside);
+        }
+      }
+    };
+
+    // Add a small delay to ensure DOM is fully loaded and ready
+    setTimeout(() => {
+      // Find all buttons with text "Choix Colonnes"
+      const targetButtons = Array.from(document.querySelectorAll('.dt-button')).filter(
+        btn => btn.textContent.trim() === 'Choix Colonnes'
+      );
+
+      if (targetButtons.length > 0) {
+        logger.log(`Found ${targetButtons.length} "Choix Colonnes" buttons`);
+
+        // Attach the event to each button
+        targetButtons.forEach((button, index) => {
+          logger.log(`Attaching event to button ${index + 1}:`);
+          console.log(button);
+
+          button.addEventListener('click', () => {
+            let columnSelector = document.querySelector('#columnSelector');
+            let body = document.querySelector('body');
+
+            if (columnSelector) {
+              if (body.getAttribute('data-table-shown') == 'true') {
+                columnSelector.style.display = 'none';
+                body.setAttribute('data-table-shown', 'false');
+                // Remove the event listener when we close the selector
+                document.removeEventListener('mousedown', handleClickOutside);
+              } else {
+                body.setAttribute('data-table-shown', 'true');
+                columnSelector = document.querySelector('#columnSelector');
+                var columnSelectorTitle = document.querySelector('#columnSelector h4');
+                columnSelectorTitle.innerText = "";
+                var columnSelectorApply = document.querySelector('#columnSelector button').parentElement;
+                var columnSelectorReset = document.querySelector('#columnSelector button').parentElement.cloneNode(true);
+                document.querySelector('#columnSelector').prepend(columnSelectorApply);
+                columnSelectorApply.parentElement.prepend(columnSelectorReset);
+                columnSelectorReset.firstChild.innerText = 'Remettre à zéro';
+                columnSelectorReset.style.marginLeft = '30%';
+                columnSelectorReset.firstChild.style.marginTop = '10px';
+                columnSelectorReset.firstChild.classList.add('resetcolumns');
+                columnSelectorReset.style.display = 'inline';
+                columnSelectorApply.style.display = 'inline';
+                columnSelectorApply.style.marginLeft = '10px';
+                columnSelectorApply.firstChild.style.marginTop = '10px';
+                columnSelectorReset.addEventListener('click', () => {
+                  handleResetColumns();
+                });
+                if (columnSelector) {
+                  document.body.appendChild(columnSelector);
+                  columnSelector.style.position = 'fixed';
+                  columnSelector.style.top = '50%';
+                  columnSelector.style.left = '50%';
+                  columnSelector.style.transform = 'translate(-50%, -50%)';
+                  columnSelector.style.zIndex = '9999';
+
+                  // Add the click outside listener after the selector is shown
+                  document.addEventListener('mousedown', handleClickOutside);
+                }
+              }
+            }
+
+          });
+        });
+      } else {
+        logger.log("(handleColumnSelector) no targetButtons found.");
+      }
+    }, 200); // Initial delay to ensure DOM is ready
   };
 
   /* TODO */
   const setupResetColumnsButtonHandler = () => {
-      const script = document.createElement('script');
-      script.textContent = `
+    const script = document.createElement('script');
+    script.textContent = `
 
           const handleResetColumns= () => {
               // Clear the corresponding localStorage entry
@@ -457,18 +525,18 @@
           const resetcolumnsBtn = document.querySelector('.resetcolumns');
               resetcolumnsBtn.addEventListener('click', () => {
                   handleResetColumns();
-              });
+          });
 
 
       `;
 
-      // Inject the script into the page
-      document.documentElement.appendChild(script);
+    // Inject the script into the page
+    document.documentElement.appendChild(script);
   };
 
   const setupResetButtonHandler = () => {
-      const script = document.createElement('script');
-      script.textContent = `
+    const script = document.createElement('script');
+    script.textContent = `
           const clearAllFilters = () => {
               document.querySelectorAll('thead.filters tr.fields input.filter-input, thead.filters tr.fields select').forEach(element => {
                   if (element.tagName.toLowerCase() === 'select') {
@@ -508,8 +576,8 @@
           }, true); // Use capture phase to ensure we catch the event first
       `;
 
-      // Inject the script into the page
-      document.documentElement.appendChild(script);
+    // Inject the script into the page
+    document.documentElement.appendChild(script);
   };
 
   const duplicateUIBottomBtn = () => {
@@ -523,25 +591,25 @@
     /* Fix si elem déjà présent en double */
     const elements_back_double = document.querySelectorAll('.connectedSortable .btn[href^=javascript]');
     if (elements_back_double.length >= 2) {
-        const firstElement = elements_back_double[0];
-        let currentNode = firstElement;
-        // Supprime les deux BR suivants
-        let brCount = 0;
-        while (currentNode.nextElementSibling && brCount < 2) {
-            let nextNode = currentNode.nextElementSibling;
-            if (nextNode.nodeName === 'BR') {
-                nextNode.remove();
-                brCount++;
-            }
-            currentNode = nextNode;
+      const firstElement = elements_back_double[0];
+      let currentNode = firstElement;
+      // Supprime les deux BR suivants
+      let brCount = 0;
+      while (currentNode.nextElementSibling && brCount < 2) {
+        let nextNode = currentNode.nextElementSibling;
+        if (nextNode.nodeName === 'BR') {
+          nextNode.remove();
+          brCount++;
         }
-        // Supprime le premier élément
-        firstElement.remove();
+        currentNode = nextNode;
+      }
+      // Supprime le premier élément
+      firstElement.remove();
     }
 
     const elements_create_double = document.querySelectorAll('.connectedSortable a[href^=\\/don\\/create_form_don_pa]');
     if (elements_create_double.length >= 2) {
-        elements_create_double[0].remove();
+      elements_create_double[0].remove();
     }
 
 
@@ -577,50 +645,50 @@
   };
 
   const setupTableResizing = () => {
-      document.addEventListener('mousedown', function(e) {
-          logger.log("mousedown listenerd")
-          // Vérifier si on clique sur une poignée de redimensionnement
-          if (
-              e.target.classList.contains('DTCR_tableHeader') ||
-              e.target.classList.contains('DTCR_tableHeaderHover')
-          ) {
-              // Pendant le drag uniquement
-              const mouseMoveHandler = function(e) {
-                  const columns = document.querySelectorAll('th');
-                  logger.log("dragging")
-                  columns.forEach(col => {
-                      if (col.offsetWidth < CONFIG.MIN_COL_WIDTH) {
-                          col.style.width = `${CONFIG.MIN_COL_WIDTH}px`;
-                      }
-                  });
-              };
+    document.addEventListener('mousedown', function (e) {
+      logger.log("mousedown listenerd")
+      // Vérifier si on clique sur une poignée de redimensionnement
+      if (
+        e.target.classList.contains('DTCR_tableHeader') ||
+        e.target.classList.contains('DTCR_tableHeaderHover')
+      ) {
+        // Pendant le drag uniquement
+        const mouseMoveHandler = function (e) {
+          const columns = document.querySelectorAll('th');
+          logger.log("dragging")
+          columns.forEach(col => {
+            if (col.offsetWidth < CONFIG.MIN_COL_WIDTH) {
+              col.style.width = `${CONFIG.MIN_COL_WIDTH}px`;
+            }
+          });
+        };
 
-              // Nettoyer quand on relâche
-              const mouseUpHandler = function() {
-                  // Vérifier une dernière fois après un court délai
-                  setTimeout(() => {
-                      const columns = document.querySelectorAll('th');
-                      columns.forEach(col => {
-                          if (col.offsetWidth < CONFIG.MIN_COL_WIDTH) {
-                              col.style.width = `${CONFIG.MIN_COL_WIDTH}px`;
-                          }
-                      });
-                  }, 50); // petit délai pour laisser DataTables finir son traitement
+        // Nettoyer quand on relâche
+        const mouseUpHandler = function () {
+          // Vérifier une dernière fois après un court délai
+          setTimeout(() => {
+            const columns = document.querySelectorAll('th');
+            columns.forEach(col => {
+              if (col.offsetWidth < CONFIG.MIN_COL_WIDTH) {
+                col.style.width = `${CONFIG.MIN_COL_WIDTH}px`;
+              }
+            });
+          }, 50); // petit délai pour laisser DataTables finir son traitement
 
-                  document.removeEventListener('mousemove', mouseMoveHandler);
-                  document.removeEventListener('mouseup', mouseUpHandler);
-              };
+          document.removeEventListener('mousemove', mouseMoveHandler);
+          document.removeEventListener('mouseup', mouseUpHandler);
+        };
 
-              document.addEventListener('mousemove', mouseMoveHandler);
-              document.addEventListener('mouseup', mouseUpHandler);
-          }
-      });
+        document.addEventListener('mousemove', mouseMoveHandler);
+        document.addEventListener('mouseup', mouseUpHandler);
+      }
+    });
   }
 
   const setupDataTableOverflow = () => {
-      (function() {
-          const script = document.createElement('script');
-          script.textContent = `
+    (function () {
+      const script = document.createElement('script');
+      script.textContent = `
           const logger2 = {
               log: (message) => {
                   document.dispatchEvent(new CustomEvent('BOLCScript_log', { detail: message }));
@@ -824,8 +892,8 @@
              initializeDataTableOverflow();
          }
          `;
-          document.documentElement.appendChild(script);
-      })();
+      document.documentElement.appendChild(script);
+    })();
   };
 
 
@@ -838,7 +906,7 @@
    * */
 
   const applyStyleIfNoTable = () => {
-      const ifNoTableStyle = `
+    const ifNoTableStyle = `
         .nav-tabs-custom > .nav-tabs > li.active > a, .nav-tabs-custom > .nav-tabs > li.active:hover > a {
           background-color: #00c1b4;
           color: #fff;
@@ -866,7 +934,7 @@
         }
       `
 
-      utils.paste(ifNoTableStyle);
+    utils.paste(ifNoTableStyle);
   }
 
   /* ----------------
@@ -878,26 +946,10 @@
    * */
 
   const applyTableauStyles = () => {
-      const tableauStyle = `
+    const tableauStyle = `
         .hover:hover {
           color: unset;
           background-color: unset;
-        }
-        #columnSelector div {
-          border-bottom: 1px solid #cccccc63;
-          padding-top: 1px;
-          padding-bottom: 1px;
-        }
-        #columnSelector label {
-          padding-left: 10px;
-          padding-right: 10px;
-        }
-        #columnSelector label:hover {
-          font-weight: bold;
-          cursor: pointer;
-        }
-        #columnSelector div:hover .icheck-item {
-          filter: hue-rotate(100deg);
         }
         body .table-responsive {
 
@@ -1007,7 +1059,7 @@
           margin-top: 2px;
         }
       `;
-      utils.paste(tableauStyle);
+    utils.paste(tableauStyle);
   }
 
   /* ----------------
@@ -1017,7 +1069,27 @@
    * */
 
   const applyGlobalStyle = () => {
-      const globalStyle = `
+    const globalStyle = `
+        .hover:hover {
+          color: unset;
+          background-color: unset;
+        }
+        #columnSelector div {
+          border-bottom: 1px solid #cccccc63;
+          padding-top: 1px;
+          padding-bottom: 1px;
+        }
+        #columnSelector label {
+          padding-left: 10px;
+          padding-right: 10px;
+        }
+        #columnSelector label:hover {
+          font-weight: bold;
+          cursor: pointer;
+        }
+        #columnSelector div:hover .icheck-item {
+          filter: hue-rotate(100deg);
+        }
       .script-link {
         color: #fff;
         text-decoration: underline;
